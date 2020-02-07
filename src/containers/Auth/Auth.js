@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, Button } from "@material-ui/core";
+import "./Auth.css";
 
 class Auth extends Component {
     state = {
@@ -37,18 +38,24 @@ class Auth extends Component {
 
     render() {
         return (
-            <form>
-                <TextField
-                    id="outlined-basic"
-                    label="Email"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Password"
-                    variant="outlined"
-                />
-            </form>
+            <div className="PageContainer">
+                <form className="Form">
+                    <h1>Login</h1>
+                    <TextField
+                        id="outlined-basic"
+                        label="Email"
+                        variant="outlined"
+                    />
+                    <TextField
+                        id="outlined-basic"
+                        label="Password"
+                        variant="outlined"
+                    />
+                    <Button variant="contained" color="primary">
+                        Login
+                    </Button>
+                </form>
+            </div>
         );
     }
 }

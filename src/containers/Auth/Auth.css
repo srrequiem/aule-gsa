@@ -1,0 +1,12 @@
+.PageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+}
+
+.Form {
+    display: flex;
+    flex-direction: column;
+}

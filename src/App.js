@@ -1,13 +1,15 @@
 import React from "react";
-import "./App.css";
 import Auth from "./containers/Auth/Auth";
 import { ThemeProvider } from "@material-ui/core";
+import "./App.css";
 
 function App() {
     return (
-        <ThemeProvider>
-            <Auth />
-        </ThemeProvider>
+        <div className="App">
+            <ThemeProvider>
+                <Auth />
+            </ThemeProvider>
+        </div>
     );
 }
 
