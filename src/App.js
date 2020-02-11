@@ -1,15 +1,20 @@
 import React from "react";
-import Auth from "./containers/Auth/Auth";
+import Login from "./routes/Login/Login";
+import Home from "./routes/Home/Home";
 import { ThemeProvider } from "@material-ui/core";
 import "./App.css";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
     return (
-        <div className="App">
-            <ThemeProvider>
-                <Auth />
-            </ThemeProvider>
-        </div>
+        <ThemeProvider>
+        <Router>
+            <Switch>
+                <Route exact path='/' component={Home} />
+                <Route exact path='/login' component={Login} />
+            </Switch>
+        </Router>
+        </ThemeProvider>
     );
 }
 
