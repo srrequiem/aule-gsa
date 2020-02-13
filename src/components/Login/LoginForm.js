@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
 
 import { Routes } from "../../constants/Routes";
-import { withFirebase } from "../../providers/Firebase/FirebaseContext";
+import { withFirebase } from "../../hoc/FirebaseContext";
 
 class LoginForm extends Component {
     state = {
@@ -24,10 +24,7 @@ class LoginForm extends Component {
         if (this.isLoginFormValid()) {
             this.props.firebase
                 .signInWithEmailAndPassword(email.value, password.value)
-                .then(test => {
-                    console.log(test);
-                    this.props.history.push(Routes.DASHBOARD);
-                })
+                .then(() => this.props.history.push(Routes.DASHBOARD))
                 .catch(error => {
                     console.log(error);
                 });

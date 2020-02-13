@@ -1,12 +1,16 @@
 import React from "react";
-import { Paper, ButtonBase } from "@material-ui/core";
+import { Paper, ButtonBase, Button } from "@material-ui/core";
 import FullscreenView from "../../containers/FullscreenView/FullscreenView";
+import { withFirebase } from "../../hoc/FirebaseContext";
 
-const Dashboard = () => (
+const Dashboard = props => (
     <FullscreenView>
+        <Button variant="contained" color="primary" onClick={() => props.firebase.signOut()}>
+            Logout
+        </Button>
         <Paper>
             <h1>Accounts</h1>
-            <ButtonBase focusRipple style={{width: "125px", height: "125px"}}>
+            <ButtonBase focusRipple style={{ width: "125px", height: "125px" }}>
                 Add
             </ButtonBase>
         </Paper>
@@ -14,4 +18,4 @@ const Dashboard = () => (
     </FullscreenView>
 );
 
-export default Dashboard;
+export default withFirebase(Dashboard);
