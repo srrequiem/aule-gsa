@@ -1,11 +1,11 @@
 import React from "react";
 import { Paper, ButtonBase, Button } from "@material-ui/core";
 import FullscreenView from "../../containers/FullscreenView/FullscreenView";
-import { withFirebase } from "../../hoc/FirebaseContext";
+import { withAuthorization } from "../../hoc/Auth" ;
 
 const Dashboard = props => (
     <FullscreenView>
-        <Button variant="contained" color="primary" onClick={() => props.firebase.signOut()}>
+        <Button variant="contained" color="primary" onClick={() => null}>
             Logout
         </Button>
         <Paper>
@@ -18,4 +18,6 @@ const Dashboard = props => (
     </FullscreenView>
 );
 
-export default withFirebase(Dashboard);
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(Dashboard);

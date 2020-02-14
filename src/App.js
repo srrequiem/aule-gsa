@@ -3,14 +3,12 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core";
 import "./App.css";
 import { Routes } from "./constants/Routes";
-import { withAuthentication } from "./hoc/AuthUserContext";
+import { withAuthentication } from "./hoc/Auth";
 import Login from "./routes/Login/Login";
 import Home from "./routes/Home/Home";
 import Dashboard from "./routes/Dashboard/Dashboard";
 
-function App(props) {
-    console.log(props);
-    
+function App() {
     return (
         <ThemeProvider>
             <Router>

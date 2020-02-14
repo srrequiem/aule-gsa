@@ -1,4 +1,5 @@
 import React from "react";
+import { withUnauthentication } from "../../hoc/Auth";
 import FullscreenView from "../../containers/FullscreenView/FullscreenView";
 import LoginForm from "../../components/Login/LoginForm";
 
@@ -8,4 +9,4 @@ const Login = () => (
     </FullscreenView>
 );
 
-export default Login;
+export default withUnauthentication(Login);
