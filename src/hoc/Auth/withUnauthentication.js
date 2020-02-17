@@ -7,14 +7,18 @@ import { Routes } from "../../constants/Routes";
 
 const withUnauthentication = Component => {
     class WithUnauthentication extends React.Component {
+        state = {
+            loadHasFinish: false
+        };
+        
         componentDidMount() {
-            this.loadHasFinish = false;
             this.listener = this.props.firebase.auth.onAuthStateChanged(
                 authUser => {
                     if (authUser) {
                         this.props.history.push(Routes.DASHBOARD);
+                        return;
                     }
-                    this.loadHasFinish = true;
+                    this.setState({ loadHasFinish: true });
                 }
             );
         }
@@ -24,10 +28,11 @@ const withUnauthentication = Component => {
         }
 
         render() {
+            const { loadHasFinish } = this.state;
             return (
                 <AuthUserContext.Consumer>
                     {authUser =>
-                        !authUser && this.loadHasFinish ? (
+                        !authUser && loadHasFinish ? (
                             <Component {...this.props} />
                         ) : null
                     }
