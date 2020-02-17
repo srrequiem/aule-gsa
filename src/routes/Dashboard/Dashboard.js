@@ -1,7 +1,5 @@
 import React from "react";
 import {
-    Paper,
-    ButtonBase,
     Typography,
     Card,
     CardHeader,
@@ -14,6 +12,7 @@ import {
 import { Edit } from "@material-ui/icons";
 import { withAuthorization } from "../../hoc/Auth";
 import AppView from "../../containers/AppView/AppView";
+import DashboardSection from "../../components/DashboardSection/DashboardSection";
 
 const ACCOUNTS = [
     {
@@ -53,41 +52,39 @@ const ACCOUNTS = [
     }
 ];
 
+const SECTIONS = [
+    {
+        title: "Accounts",
+        itemData: ACCOUNTS,
+        renderItem: item => (
+            <Card key={item.phone}>
+                <CardHeader
+                    avatar={<Avatar aria-label="account">G</Avatar>}
+                    action={
+                        <IconButton aria-label="edit">
+                            <Edit />
+                        </IconButton>
+                    }
+                    title={item.name}
+                    subheader={`${item.email} - ${item.phone}`}
+                />
+                <CardContent>
+                    <Typography>Balance: {item.balance}</Typography>
+                </CardContent>
+                <CardActions>
+                    <Button size="small">Show Payments</Button>
+                    <Button size="small">Show Fees</Button>
+                </CardActions>
+            </Card>
+        )
+    }
+];
+
 const Dashboard = () => (
     <AppView title="Dashboard">
-        <Paper>
-            <Typography variant="h4">Accounts</Typography>
-            {ACCOUNTS.map(item => (
-                <Card key={item.phone}>
-                    <CardHeader
-                        avatar={
-                            <Avatar
-                                aria-label="account"
-                            >
-                                G
-                            </Avatar>
-                        }
-                        action={
-                            <IconButton aria-label="edit">
-                                <Edit />
-                            </IconButton>
-                        }
-                        title={item.name}
-                        subheader={`${item.email} - ${item.phone}`}
-                    />
-                    <CardContent>
-                        <Typography>Balance: {item.balance}</Typography>
-                    </CardContent>
-                    <CardActions>
-                        <Button size="small">Show Payments</Button>
-                        <Button size="small">Show Fees</Button>
-                    </CardActions>
-                </Card>
-            ))}
-            <ButtonBase focusRipple style={{ width: "125px", height: "125px" }}>
-                Add
-            </ButtonBase>
-        </Paper>
+        {SECTIONS.map(section => (
+            <DashboardSection key={section.title} {...section} />
+        ))}
         <h1>Group Services</h1>
     </AppView>
 );
