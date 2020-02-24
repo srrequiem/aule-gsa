@@ -5,6 +5,7 @@ import { compose } from "recompose";
 
 import { Routes } from "../../constants/Routes";
 import { withFirebase } from "../../hoc/FirebaseContext";
+import { isEmailValid } from "../../utils/Validation";
 
 class LoginForm extends Component {
     state = {
@@ -47,9 +48,8 @@ class LoginForm extends Component {
 
     validateEmail = () => {
         const { email } = this.state;
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const validateEmailState = { ...email, helperText: "" };
-        if (!re.test(email.value)) {
+        if (!isEmailValid(email.value)) {
             validateEmailState.helperText =
                 "You must enter a valid email address";
         }

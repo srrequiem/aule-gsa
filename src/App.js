@@ -7,6 +7,10 @@ import { withAuthentication } from "./hoc/Auth";
 import Login from "./routes/Login/Login";
 import Home from "./routes/Home/Home";
 import Dashboard from "./routes/Dashboard/Dashboard";
+import Accounts from "./routes/Accounts/Accounts";
+import GroupServices from "./routes/GroupServices/GroupServices";
+import Fees from "./routes/Fees/Fees";
+import Payments from "./routes/Payments/Payments";
 
 function App() {
     return (
@@ -20,6 +24,14 @@ function App() {
                         path={Routes.DASHBOARD}
                         component={Dashboard}
                     />
+                    <Route exact path={Routes.ACCOUNTS} component={Accounts} />
+                    <Route
+                        exact
+                        path={Routes.GROUP_SERVICES}
+                        component={GroupServices}
+                    />
+                    <Route exact path={Routes.FEES} component={Fees} />
+                    <Route exact path={Routes.PAYMENTS} component={Payments} />
                 </Switch>
             </Router>
         </ThemeProvider>
