@@ -27,7 +27,7 @@ class AccountSectionItem extends Component {
     render() {
         const { anchorEl } = this.state;
         return (
-            <Card key={this.props.phone}>
+            <Card>
                 <CardHeader
                     avatar={<Avatar aria-label="account">G</Avatar>}
                     action={

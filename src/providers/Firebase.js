@@ -30,8 +30,11 @@ class Firebase {
     passwordUpdate = password => this.auth.currentUser.updatePassword(password);
 
     saveAccount = account => this.db.collection('accounts').add(account);
-
     getAccounts = () => this.db.collection('accounts').get();
+    getAccount = id => this.db.collection('accounts').doc(id).get();
+
+    saveGroupService = groupService => this.db.collection('groupServices').add(groupService);
+    getGroupServices = () => this.db.collection('groupServices').get();
 }
 
 export default Firebase;

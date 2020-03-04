@@ -7,33 +7,44 @@ import AccountForm from "../../components/Accounts/AccountForm";
 
 class Accounts extends Component {
     state = {
+        showForm: false,
         accounts: []
     };
 
     componentDidMount() {
         this.props.firebase.getAccounts().then(snapshots => {
             const accounts = [];
-            snapshots.forEach(doc => accounts.push(doc.data()));
+            snapshots.forEach(doc =>
+                accounts.push({ id: doc.id, ...doc.data() })
+            );
             this.setState({ accounts });
         });
     }
 
-    renderItemComponent = item => {
-        return <AccountSectionItem key={item.phone} {...item} />;
+    onCreate = () => {
+        this.setState({ showForm: true });
     };
 
-    renderFormComponent = onCancelEvent => {
-        return <AccountForm onCancel={onCancelEvent} />;
+    onCancel = () => {
+        this.setState({ showForm: false });
     };
 
     render() {
+        const { showForm, accounts } = this.state;
         return (
             <AppView title="Accounts">
-                <PageSection
-                    data={this.state.accounts}
-                    renderItemComponent={this.renderItemComponent}
-                    renderFormComponent={this.renderFormComponent}
-                ></PageSection>
+                <PageSection onCreate={this.onCreate}>
+                    {showForm && <AccountForm onCancel={this.onCancel} />}
+                    {accounts.map(account => (
+                        <AccountSectionItem
+                            key={account.id}
+                            name={account.name}
+                            email={account.email}
+                            phone={account.phone}
+                            balance={account.balance}
+                        />
+                    ))}
+                </PageSection>
             </AppView>
         );
     }

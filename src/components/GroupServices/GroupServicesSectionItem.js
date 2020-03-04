@@ -12,8 +12,7 @@ import { MoreVert } from "@material-ui/icons";
 
 class GroupServicesSectionItem extends Component {
     state = {
-        anchorEl: null,
-        accounts: ["asdasdas", "qwert", "poiu", "cvbnm"]
+        anchorEl: null
     };
 
     handleClick = event => {
@@ -25,9 +24,9 @@ class GroupServicesSectionItem extends Component {
     };
 
     render() {
-        const { anchorEl, accounts } = this.state;
+        const { anchorEl } = this.state;
         return (
-            <Card key={this.props.phone}>
+            <Card>
                 <CardHeader
                     action={
                         <div>
@@ -58,9 +57,11 @@ class GroupServicesSectionItem extends Component {
                     title={this.props.name}
                 />
                 <CardContent>
-                    <Typography component="h5">Accounts:</Typography>
-                    <Typography component="body2" color="textSecondary">
-                        {accounts.join(", ")}
+                    <Typography variant="h5">Accounts:</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        {this.props.accounts
+                            .map(account => (account ? account.name : null))
+                            .join(", ")}
                     </Typography>
                 </CardContent>
             </Card>
