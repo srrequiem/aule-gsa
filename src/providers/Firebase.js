@@ -35,6 +35,9 @@ class Firebase {
 
     saveGroupService = groupService => this.db.collection('groupServices').add(groupService);
     getGroupServices = () => this.db.collection('groupServices').get();
+
+    saveFee = fee => this.db.collection('fees').add(fee);
+    getFees = () => this.db.collection('fees').get();
 }
 
 export default Firebase;

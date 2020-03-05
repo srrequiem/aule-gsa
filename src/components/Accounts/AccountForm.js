@@ -17,11 +17,11 @@ import {
     Person,
     Phone,
     Email,
-    AttachMoney,
+    AccountBalance,
     LocalAtm
 } from "@material-ui/icons";
 
-import { isEmailValid } from "../../utils/Validation";
+import { isEmailValid, isFloatValid } from "../../utils/Validation";
 import { withFirebase } from "../../hoc/FirebaseContext"
 
 const FEES = ["qwerty1", "qwerty2", "qwerty3", "qwerty4"];
@@ -101,11 +101,11 @@ class AccountForm extends Component {
 
     validatePhone = () => {
         const { phone } = this.state;
-        const validateNameState = { ...phone, helperText: "" };
+        const validatePhoneState = { ...phone, helperText: "" };
         if (phone.value.length < 3) {
-            validateNameState.helperText = "Name too short";
+            validatePhoneState.helperText = "Name too short";
         }
-        this.setState({ phone: validateNameState });
+        this.setState({ phone: validatePhoneState });
     };
 
     isEmailValid = () => {
@@ -130,9 +130,8 @@ class AccountForm extends Component {
 
     validateBalance = () => {
         const { balance } = this.state;
-        const floatedBalance = parseFloat(balance.value);
         const validateBalanceState = { ...balance, helperText: "" };
-        if (isNaN(floatedBalance)) {
+        if (!isFloatValid(balance.value)) {
             validateBalanceState.helperText = "You must enter a valid number";
         }
         this.setState({ balance: validateBalanceState });
@@ -200,7 +199,7 @@ class AccountForm extends Component {
                                 }
                                 labelWidth={60}
                             />
-                            <FormHelperText id="name-helper-text">
+                            <FormHelperText id="phone-helper-text">
                                 {phone.helperText}
                             </FormHelperText>
                         </FormControl>
@@ -257,12 +256,12 @@ class AccountForm extends Component {
                                 }}
                                 startAdornment={
                                     <InputAdornment position="start">
-                                        <AttachMoney />
+                                        <AccountBalance />
                                     </InputAdornment>
                                 }
                                 labelWidth={60}
                             />
-                            <FormHelperText id="my-helper-text">
+                            <FormHelperText id="balance-helper-text">
                                 {balance.helperText}
                             </FormHelperText>
                         </FormControl>

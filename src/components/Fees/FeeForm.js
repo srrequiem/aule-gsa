@@ -14,18 +14,23 @@ import {
     MenuItem
 } from "@material-ui/core";
 import {
-    Person,
-    Phone,
-    Email,
+    LocalAtm,
     AttachMoney,
-    LocalAtm
+    DateRange,
+    AlarmAdd,
+    AddAlert,
+    Today
 } from "@material-ui/icons";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker
+} from "@material-ui/pickers";
 
-import { isEmailValid } from "../../utils/Validation";
-import { withFirebase } from "../../hoc/FirebaseContext"
+import { isFloatValid, isIntValid } from "../../utils/Validation";
+import { withFirebase } from "../../hoc/FirebaseContext";
 
-const FEES = ["qwerty1", "qwerty2", "qwerty3", "qwerty4"];
-
+const REMINDERS = ["Email", "SMS"];
 class FeeForm extends Component {
     constructor(props) {
         super(props);
@@ -39,33 +44,43 @@ class FeeForm extends Component {
                 helperText: ""
             },
             concurrency: {
-                value: "",
+                value: 30,
+                helperText: ""
+            },
+            triggerDate: {
+                value: new Date(),
                 helperText: ""
             },
             reminderConcurrency: {
                 value: 0,
                 helperText: ""
             },
-            fees: {
+            reminders: {
                 value: [],
                 helperText: ""
             }
         };
     }
 
-    onAccountCreation = event => {
+    onFeeCreation = event => {
         event.preventDefault();
         if (this.isFormValid()) {
-            const { name, phone, email, balance, fees } = this.state;
-            const account = {
+            const {
+                name,
+                amount,
+                concurrency,
+                reminderConcurrency,
+                reminders
+            } = this.state;
+            const fee = {
                 name: name.value,
-                phone: phone.value,
-                email: email.value,
-                balance: parseFloat(balance.value),
-                fees: fees.value
+                amount: parseFloat(amount.value),
+                concurrency: parseInt(concurrency.value),
+                reminderConcurrency: parseInt(reminderConcurrency.value),
+                reminders: reminders.value
             };
             this.props.firebase
-                .saveAccount(account)
+                .saveFee(fee)
                 .then(res => console.log(res))
                 .catch(error => console.log(error));
         }
@@ -74,9 +89,9 @@ class FeeForm extends Component {
     isFormValid = () => {
         return (
             this.isNameValid() &&
-            this.isPhoneValid() &&
-            this.isEmailValid() &&
-            this.isBalanceValid()
+            this.isAmountValid() &&
+            this.isConcurrencyValid() &&
+            this.isReminderConcurrencyValid()
         );
     };
 
@@ -94,218 +109,268 @@ class FeeForm extends Component {
         this.setState({ name: validateNameState });
     };
 
-    isPhoneValid = () => {
-        const { phone } = this.state;
-        return phone.helperText === "";
+    isAmountValid = () => {
+        const { amount } = this.state;
+        return amount.helperText === "";
     };
 
-    validatePhone = () => {
-        const { phone } = this.state;
-        const validateNameState = { ...phone, helperText: "" };
-        if (phone.value.length < 3) {
-            validateNameState.helperText = "Name too short";
+    validateAmount = () => {
+        const { amount } = this.state;
+        const validateAmountState = {
+            value: parseFloat(amount.value),
+            helperText: ""
+        };
+        if (!isFloatValid(amount.value)) {
+            validateAmountState.helperText = "You must enter a valid number";
         }
-        this.setState({ phone: validateNameState });
+        this.setState({ amount: validateAmountState });
     };
 
-    isEmailValid = () => {
-        const { email } = this.state;
-        return email.helperText === "";
+    isConcurrencyValid = () => {
+        const { concurrency } = this.state;
+        return concurrency.helperText === "";
     };
 
-    validateEmail = () => {
-        const { email } = this.state;
-        const validateEmailState = { ...email, helperText: "" };
-        if (!isEmailValid(email.value)) {
-            validateEmailState.helperText =
-                "You must enter a valid email address";
+    validateConcurrency = () => {
+        const { concurrency } = this.state;
+        const validateConcurrencyState = {
+            value: parseInt(concurrency.value),
+            helperText: ""
+        };
+        if (!isIntValid(concurrency.value)) {
+            validateConcurrencyState.helperText =
+                "You must enter a valid number";
         }
-        this.setState({ email: validateEmailState });
+        this.setState({ concurrency: validateConcurrencyState });
     };
 
-    isBalanceValid = () => {
-        const { balance } = this.state;
-        return balance.helperText === "";
+    isReminderConcurrencyValid = () => {
+        const { reminderConcurrency } = this.state;
+        return reminderConcurrency.helperText === "";
     };
 
-    validateBalance = () => {
-        const { balance } = this.state;
-        const floatedBalance = parseFloat(balance.value);
-        const validateBalanceState = { ...balance, helperText: "" };
-        if (isNaN(floatedBalance)) {
-            validateBalanceState.helperText = "You must enter a valid number";
+    validateReminderConcurrency = () => {
+        const { reminderConcurrency } = this.state;
+        const validateReminderConcurrencyState = {
+            value: parseInt(reminderConcurrency.value),
+            helperText: ""
+        };
+        if (!isIntValid(reminderConcurrency.value)) {
+            validateReminderConcurrencyState.helperText =
+                "You must enter a valid number";
         }
-        this.setState({ balance: validateBalanceState });
+        this.setState({
+            reminderConcurrency: validateReminderConcurrencyState
+        });
     };
 
     render() {
-        const { name, phone, email, balance, fees } = this.state;
+        const {
+            name,
+            amount,
+            concurrency,
+            triggerDate,
+            reminderConcurrency,
+            reminders
+        } = this.state;
         return (
-            <form onSubmit={this.onAccountCreation}>
-                <Card>
-                    <CardHeader title={"New account"} />
-                    <CardContent>
-                        <FormControl
-                            error={!this.isNameValid()}
-                            required
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-name">
-                                Name
-                            </InputLabel>
-                            <OutlinedInput
-                                id="outlined-name"
-                                value={name.value}
-                                onBlur={this.validateName}
-                                onChange={e => {
-                                    this.setState({
-                                        name: { ...name, value: e.target.value }
-                                    });
-                                }}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <Person />
-                                    </InputAdornment>
-                                }
-                                labelWidth={60}
-                            />
-                            <FormHelperText id="name-helper-text">
-                                {name.helperText}
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl
-                            error={!this.isPhoneValid()}
-                            required
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-phone">
-                                Phone
-                            </InputLabel>
-                            <OutlinedInput
-                                id="outlined-phone"
-                                value={phone.value}
-                                onBlur={this.validatePhone}
-                                onChange={e => {
-                                    this.setState({
-                                        phone: {
-                                            ...phone,
-                                            value: e.target.value
-                                        }
-                                    });
-                                }}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <Phone />
-                                    </InputAdornment>
-                                }
-                                labelWidth={60}
-                            />
-                            <FormHelperText id="name-helper-text">
-                                {phone.helperText}
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl
-                            error={!this.isEmailValid()}
-                            required
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-email">
-                                Email
-                            </InputLabel>
-                            <OutlinedInput
-                                id="outlined-email"
-                                value={email.value}
-                                onBlur={this.validateEmail}
-                                onChange={e => {
-                                    this.setState({
-                                        email: {
-                                            ...email,
-                                            value: e.target.value
-                                        }
-                                    });
-                                }}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <Email />
-                                    </InputAdornment>
-                                }
-                                labelWidth={60}
-                            />
-                            <FormHelperText id="email-helper-text">
-                                {email.helperText}
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl
-                            error={!this.isBalanceValid()}
-                            required
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-balance">
-                                Balance
-                            </InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-balance"
-                                value={balance.value}
-                                onBlur={this.validateBalance}
-                                onChange={e => {
-                                    this.setState({
-                                        balance: {
-                                            ...balance,
-                                            value: e.target.value
-                                        }
-                                    });
-                                }}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <AttachMoney />
-                                    </InputAdornment>
-                                }
-                                labelWidth={60}
-                            />
-                            <FormHelperText id="my-helper-text">
-                                {balance.helperText}
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl variant="outlined">
-                            <InputLabel
-                                htmlFor="outlined-adornment-fees"
-                                id="outlined-adornment-fees"
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <form onSubmit={this.onFeeCreation}>
+                    <Card>
+                        <CardHeader title={"New fee"} />
+                        <CardContent>
+                            <FormControl
+                                error={!this.isNameValid()}
+                                required
+                                variant="outlined"
                             >
-                                Fees
-                            </InputLabel>
-                            <Select
-                                labelId="outlined-adornment-fees"
-                                id="outlined-adornment-fees-select"
-                                multiple
-                                value={fees.value}
-                                onChange={e => {
+                                <InputLabel htmlFor="outlined-name">
+                                    Name
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="outlined-name"
+                                    value={name.value}
+                                    onBlur={this.validateName}
+                                    onChange={e => {
+                                        this.setState({
+                                            name: {
+                                                ...name,
+                                                value: e.target.value
+                                            }
+                                        });
+                                    }}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <LocalAtm />
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={60}
+                                />
+                                <FormHelperText id="name-helper-text">
+                                    {name.helperText}
+                                </FormHelperText>
+                            </FormControl>
+                            <FormControl
+                                error={!this.isAmountValid()}
+                                required
+                                variant="outlined"
+                            >
+                                <InputLabel htmlFor="outlined-amount">
+                                    Amount
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="outlined-amount"
+                                    value={amount.value}
+                                    onBlur={this.validateAmount}
+                                    onChange={e => {
+                                        this.setState({
+                                            amount: {
+                                                ...amount,
+                                                value: e.target.value
+                                            }
+                                        });
+                                    }}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <AttachMoney />
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={60}
+                                />
+                                <FormHelperText id="amount-helper-text">
+                                    {amount.helperText}
+                                </FormHelperText>
+                            </FormControl>
+                            <FormControl
+                                error={!this.isConcurrencyValid()}
+                                required
+                                variant="outlined"
+                            >
+                                <InputLabel htmlFor="outlined-concurrency">
+                                    Concurrency
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="outlined-concurrency"
+                                    value={concurrency.value}
+                                    onBlur={this.validateConcurrency}
+                                    onChange={e => {
+                                        this.setState({
+                                            concurrency: {
+                                                ...concurrency,
+                                                value: e.target.value
+                                            }
+                                        });
+                                    }}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <DateRange />
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={60}
+                                />
+                                <FormHelperText id="concurrency-helper-text">
+                                    {concurrency.helperText}
+                                </FormHelperText>
+                            </FormControl>
+                            <KeyboardDatePicker
+                                required
+                                inputVariant="outlined"
+                                id="date-picker-dialog"
+                                label="Trigger Date"
+                                format="MM/dd/yyyy"
+                                value={triggerDate.value}
+                                onChange={date => {
                                     this.setState({
-                                        fees: { ...fees, value: e.target.value }
+                                        triggerDate: {
+                                            ...triggerDate,
+                                            value: date
+                                        }
                                     });
                                 }}
-                                labelWidth={60}
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <LocalAtm />
-                                    </InputAdornment>
-                                }
+                                KeyboardButtonProps={{
+                                    "aria-label": "change date"
+                                }}
+                            />
+                            <FormControl
+                                error={!this.isReminderConcurrencyValid()}
+                                required
+                                variant="outlined"
                             >
-                                {FEES.map(fee => (
-                                    <MenuItem key={fee} value={fee}>
-                                        {fee}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </CardContent>
-                    <CardActions style={{ justifyContent: "flex-end" }}>
-                        <Button onClick={this.props.onCancel}>Cancel</Button>
-                        <Button color="primary" type="submit">
-                            Add account
-                        </Button>
-                    </CardActions>
-                </Card>
-            </form>
+                                <InputLabel htmlFor="outlined-adornment-reminder-concurrency">
+                                    Reminder Concurrency
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-reminder-concurrency"
+                                    value={reminderConcurrency.value}
+                                    onBlur={this.validateReminderConcurrency}
+                                    onChange={e => {
+                                        this.setState({
+                                            reminderConcurrency: {
+                                                ...reminderConcurrency,
+                                                value: e.target.value
+                                            }
+                                        });
+                                    }}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <AlarmAdd />
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={60}
+                                />
+                                <FormHelperText id="reminder-concurrency-helper-text">
+                                    {reminderConcurrency.helperText}
+                                </FormHelperText>
+                            </FormControl>
+                            <FormControl variant="outlined">
+                                <InputLabel
+                                    htmlFor="outlined-adornment-reminders"
+                                    id="outlined-adornment-reminders"
+                                >
+                                    Reminders
+                                </InputLabel>
+                                <Select
+                                    labelId="outlined-adornment-reminders"
+                                    id="outlined-adornment-reminders-select"
+                                    multiple
+                                    value={reminders.value}
+                                    onChange={e => {
+                                        this.setState({
+                                            reminders: {
+                                                ...reminders,
+                                                value: e.target.value
+                                            }
+                                        });
+                                    }}
+                                    labelWidth={60}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <AddAlert />
+                                        </InputAdornment>
+                                    }
+                                >
+                                    {REMINDERS.map(reminder => (
+                                        <MenuItem
+                                            key={reminder}
+                                            value={reminder}
+                                        >
+                                            {reminder}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </CardContent>
+                        <CardActions style={{ justifyContent: "flex-end" }}>
+                            <Button onClick={this.props.onCancel}>
+                                Cancel
+                            </Button>
+                            <Button color="primary" type="submit">
+                                Add fee
+                            </Button>
+                        </CardActions>
+                    </Card>
+                </form>
+            </MuiPickersUtilsProvider>
         );
     }
 }

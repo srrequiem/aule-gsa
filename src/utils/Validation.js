@@ -5,10 +5,10 @@ export const isEmailValid = email => {
 
 export const isFloatValid = number => {
     const floatNumber = parseFloat(number);
-    return isNaN(floatNumber);
+    return !isNaN(floatNumber);
 }
 
 export const isIntValid = number => {
     const intNumber = parseInt(number);
-    return isNaN(intNumber);
+    return !isNaN(intNumber);
 }

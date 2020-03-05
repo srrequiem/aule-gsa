@@ -13,12 +13,9 @@ import {
     Select,
     MenuItem
 } from "@material-ui/core";
-import {
-    Person,
-    OndemandVideo
-} from "@material-ui/icons";
+import { Person, OndemandVideo } from "@material-ui/icons";
 
-import { withFirebase } from "../../hoc/FirebaseContext"
+import { withFirebase } from "../../hoc/FirebaseContext";
 
 class GroupServicesForm extends Component {
     constructor(props) {
@@ -39,7 +36,9 @@ class GroupServicesForm extends Component {
     componentDidMount() {
         this.props.firebase.getAccounts().then(snapshots => {
             const fetchedAccounts = [];
-            snapshots.forEach(doc => fetchedAccounts.push({id: doc.id, ...doc.data()}));
+            snapshots.forEach(doc =>
+                fetchedAccounts.push({ id: doc.id, ...doc.data() })
+            );
             this.setState({ fetchedAccounts });
         });
     }
@@ -126,7 +125,10 @@ class GroupServicesForm extends Component {
                                 value={accounts.value}
                                 onChange={e => {
                                     this.setState({
-                                        accounts: { ...accounts, value: e.target.value }
+                                        accounts: {
+                                            ...accounts,
+                                            value: e.target.value
+                                        }
                                     });
                                 }}
                                 labelWidth={60}
@@ -137,7 +139,10 @@ class GroupServicesForm extends Component {
                                 }
                             >
                                 {fetchedAccounts.map(account => (
-                                    <MenuItem key={account.id} value={account.id}>
+                                    <MenuItem
+                                        key={account.id}
+                                        value={account.id}
+                                    >
                                         {account.name}
                                     </MenuItem>
                                 ))}

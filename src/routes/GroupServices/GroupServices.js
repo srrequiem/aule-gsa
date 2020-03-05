@@ -8,7 +8,8 @@ import GroupServicesForm from "../../components/GroupServices/GroupServicesForm"
 class GroupServices extends Component {
     state = {
         groupServices: [],
-        groupServicesAccounts: {}
+        groupServicesAccounts: {},
+        showForm: false
     };
 
     componentDidMount() {
@@ -44,6 +45,14 @@ class GroupServices extends Component {
             });
     }
 
+    onCreate = () => {
+        this.setState({ showForm: true });
+    };
+
+    onCancel = () => {
+        this.setState({ showForm: false });
+    };
+
     renderSectionItems = () => {
         const { groupServices, groupServicesAccounts } = this.state;
         return groupServices.map(group => {
@@ -53,18 +62,22 @@ class GroupServices extends Component {
                     accounts.push(groupServicesAccounts[accountID]);
                 }
             }
-            return <GroupServicesSectionItem key={group.id} name={group.name} accounts={accounts} />;
+            return (
+                <GroupServicesSectionItem
+                    key={group.id}
+                    name={group.name}
+                    accounts={accounts}
+                />
+            );
         });
     };
 
-    renderFormComponent = onCancelEvent => {
-        return <GroupServicesForm onCancel={onCancelEvent} />;
-    };
-
     render() {
+        const { showForm } = this.state;
         return (
             <AppView title="Group Services">
-                <PageSection>
+                <PageSection onCreate={this.onCreate}>
+                    {showForm && <GroupServicesForm onCancel={this.onCancel} />}
                     {this.renderSectionItems()}
                 </PageSection>
             </AppView>
