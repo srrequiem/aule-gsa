@@ -4,12 +4,15 @@ import AppView from "../../containers/AppView/AppView";
 import PageSection from "../../components/PageSection/PageSection";
 import GroupServicesSectionItem from "../../components/GroupServices/GroupServicesSectionItem";
 import GroupServicesForm from "../../components/GroupServices/GroupServicesForm";
+import DeleteDialog from "../../components/DeleteDialog/DeleteDialog";
 
 class GroupServices extends Component {
     state = {
         groupServices: [],
         groupServicesAccounts: {},
-        showForm: false
+        showForm: false,
+        groupServiceID: "",
+        deleteDialogOpen: false
     };
 
     componentDidMount() {
@@ -53,6 +56,24 @@ class GroupServices extends Component {
         this.setState({ showForm: false });
     };
 
+    onDelete = groupServiceID => {
+        this.setState({ groupServiceID, deleteDialogOpen: true });
+    };
+
+    handleDeleteConfirmation = decision => {
+        if (decision) {
+            const { groupServiceID } = this.state;
+            this.props.firebase
+                .deleteGroupService(groupServiceID)
+                .then(() => {
+                    this.setState({ deleteDialogOpen: false });
+                })
+                .catch(error => console.log(error));
+        } else {
+            this.setState({ deleteDialogOpen: false });
+        }
+    };
+
     renderSectionItems = () => {
         const { groupServices, groupServicesAccounts } = this.state;
         return groupServices.map(group => {
@@ -65,21 +86,28 @@ class GroupServices extends Component {
             return (
                 <GroupServicesSectionItem
                     key={group.id}
+                    id={group.id}
                     name={group.name}
                     accounts={accounts}
+                    onDelete={this.onDelete}
                 />
             );
         });
     };
 
     render() {
-        const { showForm } = this.state;
+        const { showForm, deleteDialogOpen } = this.state;
         return (
             <AppView title="Group Services">
                 <PageSection onCreate={this.onCreate}>
                     {showForm && <GroupServicesForm onCancel={this.onCancel} />}
                     {this.renderSectionItems()}
                 </PageSection>
+                <DeleteDialog
+                    entity="group services"
+                    open={deleteDialogOpen}
+                    handleConfirmation={this.handleDeleteConfirmation}
+                />
             </AppView>
         );
     }

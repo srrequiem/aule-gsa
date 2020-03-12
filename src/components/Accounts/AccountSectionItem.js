@@ -24,6 +24,11 @@ class AccountSectionItem extends Component {
         this.setState({ anchorEl: null });
     };
 
+    handleDelete = () => {
+        this.setState({ anchorEl: null });
+        this.props.onDelete(this.props.id);
+    }
+
     handlePayment = () => {
         this.setState({ anchorEl: null });
         this.props.onAddPayment(this.props.id);
@@ -58,7 +63,7 @@ class AccountSectionItem extends Component {
                                 <MenuItem onClick={this.handleClose}>
                                     Edit
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
+                                <MenuItem onClick={this.handleDelete}>
                                     Delete
                                 </MenuItem>
                             </Menu>

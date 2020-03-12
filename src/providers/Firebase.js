@@ -29,15 +29,18 @@ class Firebase {
 
     passwordUpdate = password => this.auth.currentUser.updatePassword(password);
 
-    saveAccount = account => this.db.collection('accounts').add(account);
     getAccounts = () => this.db.collection('accounts').get();
-    getAccount = id => this.db.collection('accounts').doc(id).get();
-
-    saveGroupService = groupService => this.db.collection('groupServices').add(groupService);
+    getAccount = accountID => this.db.collection('accounts').doc(accountID).get();
+    saveAccount = account => this.db.collection('accounts').add(account);
+    deleteAccount = accountID => this.db.collection('accounts').doc(accountID).delete();
+    
     getGroupServices = () => this.db.collection('groupServices').get();
+    saveGroupService = groupService => this.db.collection('groupServices').add(groupService);
+    deleteGroupService = groupServiceID => this.db.collection('groupServices').doc(groupServiceID).delete();
 
-    saveFee = fee => this.db.collection('fees').add(fee);
     getFees = () => this.db.collection('fees').get();
+    saveFee = fee => this.db.collection('fees').add(fee);
+    deleteFee = feeID => this.db.collection('fees').doc(feeID).delete();
 
     savePayment = payment => this.db.collection('payments').add(payment);
 }

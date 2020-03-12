@@ -4,14 +4,16 @@ import AppView from "../../containers/AppView/AppView";
 import PageSection from "../../components/PageSection/PageSection";
 import AccountSectionItem from "../../components/Accounts/AccountSectionItem";
 import AccountForm from "../../components/Accounts/AccountForm";
-import AccountPaymentForm from "../../components/Accounts/AccountPaymentForm";
+import AccountPaymentDialogForm from "../../components/Accounts/AccountPaymentDialogForm";
+import DeleteDialog from "../../components/DeleteDialog/DeleteDialog";
 
 class Accounts extends Component {
     state = {
         showForm: false,
         accounts: [],
+        accountID: "",
         paymentDialogOpen: false,
-        accountID: ""
+        deleteDialogOpen: false
     };
 
     componentDidMount() {
@@ -36,12 +38,36 @@ class Accounts extends Component {
         this.setState({ showForm: true });
     };
 
+    onDelete = accountID => {
+        this.setState({ accountID, deleteDialogOpen: true });
+    };
+
+    handleDeleteConfirmation = decision => {
+        if (decision) {
+            const { accountID } = this.state;
+            this.props.firebase
+                .deleteAccount(accountID)
+                .then(() => {
+                    this.setState({ deleteDialogOpen: false });
+                })
+                .catch(error => console.log(error));
+        } else {
+            this.setState({ deleteDialogOpen: false });
+        }
+    };
+
     onCancel = () => {
         this.setState({ showForm: false });
     };
 
     render() {
-        const { showForm, accounts, paymentDialogOpen, accountID } = this.state;
+        const {
+            showForm,
+            accounts,
+            accountID,
+            paymentDialogOpen,
+            deleteDialogOpen
+        } = this.state;
         return (
             <AppView title="Accounts">
                 <PageSection onCreate={this.onCreate}>
@@ -54,14 +80,20 @@ class Accounts extends Component {
                             email={account.email}
                             phone={account.phone}
                             balance={account.balance}
+                            onDelete={this.onDelete}
                             onAddPayment={this.onOpenPaymentDialog}
                         />
                     ))}
                 </PageSection>
-                <AccountPaymentForm
+                <AccountPaymentDialogForm
                     open={paymentDialogOpen}
                     onClose={this.onClosePaymentDialog}
                     accountID={accountID}
+                />
+                <DeleteDialog
+                    entity="account"
+                    open={deleteDialogOpen}
+                    handleConfirmation={this.handleDeleteConfirmation}
                 />
             </AppView>
         );

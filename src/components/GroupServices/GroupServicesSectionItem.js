@@ -23,6 +23,11 @@ class GroupServicesSectionItem extends Component {
         this.setState({ anchorEl: null });
     };
 
+    handleDelete = () => {
+        this.setState({ anchorEl: null });
+        this.props.onDelete(this.props.id);
+    }
+
     render() {
         const { anchorEl } = this.state;
         return (
@@ -48,7 +53,7 @@ class GroupServicesSectionItem extends Component {
                                 <MenuItem onClick={this.handleClose}>
                                     Edit
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
+                                <MenuItem onClick={this.handleDelete}>
                                     Delete
                                 </MenuItem>
                             </Menu>
