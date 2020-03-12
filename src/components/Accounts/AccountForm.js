@@ -22,36 +22,33 @@ import {
 } from "@material-ui/icons";
 
 import { isEmailValid, isFloatValid } from "../../utils/Validation";
-import { withFirebase } from "../../hoc/FirebaseContext"
+import { withFirebase } from "../../hoc/FirebaseContext";
 
 const FEES = ["qwerty1", "qwerty2", "qwerty3", "qwerty4"];
 
 class AccountForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: {
-                value: "",
-                helperText: ""
-            },
-            phone: {
-                value: "",
-                helperText: ""
-            },
-            email: {
-                value: "",
-                helperText: ""
-            },
-            balance: {
-                value: 0,
-                helperText: ""
-            },
-            fees: {
-                value: [],
-                helperText: ""
-            }
-        };
-    }
+    state = {
+        name: {
+            value: "",
+            helperText: ""
+        },
+        phone: {
+            value: "",
+            helperText: ""
+        },
+        email: {
+            value: "",
+            helperText: ""
+        },
+        balance: {
+            value: 0,
+            helperText: ""
+        },
+        fees: {
+            value: [],
+            helperText: ""
+        }
+    };
 
     onAccountCreation = event => {
         event.preventDefault();

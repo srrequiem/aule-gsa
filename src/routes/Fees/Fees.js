@@ -39,6 +39,7 @@ class Fees extends Component {
                             name={fee.name}
                             amount={fee.amount}
                             concurrency={fee.concurrency}
+                            triggerDate={fee.triggerDate.toDate()}
                             reminder={{
                                 concurrency: fee.reminderConcurrency,
                                 options: fee.reminders

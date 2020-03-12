@@ -38,6 +38,8 @@ class Firebase {
 
     saveFee = fee => this.db.collection('fees').add(fee);
     getFees = () => this.db.collection('fees').get();
+
+    savePayment = payment => this.db.collection('payments').add(payment);
 }
 
 export default Firebase;

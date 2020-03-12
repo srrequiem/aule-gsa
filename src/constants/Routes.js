@@ -7,6 +7,5 @@ export const Routes = {
     ACCOUNTS: "/accounts",
     GROUP_SERVICES: "/group-services",
     FEES: "/fees",
-    PAYMENTS: "/payments",
     SETTINGS: "/settings",
 };

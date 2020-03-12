@@ -24,6 +24,11 @@ class AccountSectionItem extends Component {
         this.setState({ anchorEl: null });
     };
 
+    handlePayment = () => {
+        this.setState({ anchorEl: null });
+        this.props.onAddPayment(this.props.id);
+    }
+
     render() {
         const { anchorEl } = this.state;
         return (
@@ -47,6 +52,9 @@ class AccountSectionItem extends Component {
                                 open={Boolean(anchorEl)}
                                 onClose={this.handleClose}
                             >
+                                <MenuItem onClick={this.handlePayment}>
+                                    Add Payment
+                                </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
                                     Edit
                                 </MenuItem>

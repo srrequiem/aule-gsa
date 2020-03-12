@@ -4,8 +4,6 @@ import {
     Card,
     CardHeader,
     CardContent,
-    Avatar,
-    Button,
     IconButton,
     Menu,
     MenuItem
@@ -21,6 +19,19 @@ class FeeSectionItem extends Component {
 
     handleClose = () => {
         this.setState({ anchorEl: null });
+    };
+
+    formatDate = () => {
+        const options = { day: "numeric", month: "short", year: "numeric" };
+        const dtf = new Intl.DateTimeFormat("en-US", options);
+        const [
+            { value: month },
+            ,
+            { value: day },
+            ,
+            { value: year }
+        ] = dtf.formatToParts(this.props.triggerDate);
+        return `${day}/${month}/${year}`;
     };
 
     render() {
@@ -55,10 +66,19 @@ class FeeSectionItem extends Component {
                         </div>
                     }
                     title={this.props.name}
+                    subheader={`Next Charge: ${this.formatDate()}`}
                 />
                 <CardContent>
-                    <Typography component="body2" color="textSecondary">
-                        Hola alv
+                    <Typography variant="h6">Charge:</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        ${this.props.amount} will be charge every{" "}
+                        {this.props.concurrency} day(s).
+                    </Typography>
+                    <Typography variant="h6">Reminder:</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        It will be send by{" "}
+                        {this.props.reminder.options.join(" and ")} every{" "}
+                        {this.props.reminder.concurrency} day(s).
                     </Typography>
                 </CardContent>
             </Card>

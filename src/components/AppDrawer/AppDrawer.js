@@ -12,8 +12,7 @@ import {
     Settings,
     AccountBox,
     Group,
-    LocalAtm,
-    Payment
+    LocalAtm
 } from "@material-ui/icons";
 import { withRouter } from "react-router-dom";
 import { Routes } from "../../constants/Routes";
@@ -38,11 +37,6 @@ const AppDrawer = props => (
                         icon: <Group />
                     },
                     { text: "Fees", route: Routes.FEES, icon: <LocalAtm /> },
-                    {
-                        text: "Payments",
-                        route: Routes.PAYMENTS,
-                        icon: <Payment />
-                    },
                     {
                         text: "Settings",
                         route: Routes.SETTINGS,

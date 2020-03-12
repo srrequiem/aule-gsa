@@ -18,20 +18,17 @@ import { Person, OndemandVideo } from "@material-ui/icons";
 import { withFirebase } from "../../hoc/FirebaseContext";
 
 class GroupServicesForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: {
-                value: "",
-                helperText: ""
-            },
-            accounts: {
-                value: [],
-                helperText: ""
-            },
-            fetchedAccounts: []
-        };
-    }
+    state = {
+        name: {
+            value: "",
+            helperText: ""
+        },
+        accounts: {
+            value: [],
+            helperText: ""
+        },
+        fetchedAccounts: []
+    };
 
     componentDidMount() {
         this.props.firebase.getAccounts().then(snapshots => {

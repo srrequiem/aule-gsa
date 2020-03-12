@@ -10,7 +10,6 @@ import Dashboard from "./routes/Dashboard/Dashboard";
 import Accounts from "./routes/Accounts/Accounts";
 import GroupServices from "./routes/GroupServices/GroupServices";
 import Fees from "./routes/Fees/Fees";
-import Payments from "./routes/Payments/Payments";
 
 function App() {
     return (
@@ -31,7 +30,6 @@ function App() {
                         component={GroupServices}
                     />
                     <Route exact path={Routes.FEES} component={Fees} />
-                    <Route exact path={Routes.PAYMENTS} component={Payments} />
                 </Switch>
             </Router>
         </ThemeProvider>

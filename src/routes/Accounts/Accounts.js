@@ -4,11 +4,14 @@ import AppView from "../../containers/AppView/AppView";
 import PageSection from "../../components/PageSection/PageSection";
 import AccountSectionItem from "../../components/Accounts/AccountSectionItem";
 import AccountForm from "../../components/Accounts/AccountForm";
+import AccountPaymentForm from "../../components/Accounts/AccountPaymentForm";
 
 class Accounts extends Component {
     state = {
         showForm: false,
-        accounts: []
+        accounts: [],
+        paymentDialogOpen: false,
+        accountID: ""
     };
 
     componentDidMount() {
@@ -21,6 +24,14 @@ class Accounts extends Component {
         });
     }
 
+    onOpenPaymentDialog = accountID => {
+        this.setState({ accountID, paymentDialogOpen: true });
+    };
+
+    onClosePaymentDialog = () => {
+        this.setState({ paymentDialogOpen: false });
+    };
+
     onCreate = () => {
         this.setState({ showForm: true });
     };
@@ -30,7 +41,7 @@ class Accounts extends Component {
     };
 
     render() {
-        const { showForm, accounts } = this.state;
+        const { showForm, accounts, paymentDialogOpen, accountID } = this.state;
         return (
             <AppView title="Accounts">
                 <PageSection onCreate={this.onCreate}>
@@ -38,13 +49,20 @@ class Accounts extends Component {
                     {accounts.map(account => (
                         <AccountSectionItem
                             key={account.id}
+                            id={account.id}
                             name={account.name}
                             email={account.email}
                             phone={account.phone}
                             balance={account.balance}
+                            onAddPayment={this.onOpenPaymentDialog}
                         />
                     ))}
                 </PageSection>
+                <AccountPaymentForm
+                    open={paymentDialogOpen}
+                    onClose={this.onClosePaymentDialog}
+                    accountID={accountID}
+                />
             </AppView>
         );
     }

@@ -18,8 +18,7 @@ import {
     AttachMoney,
     DateRange,
     AlarmAdd,
-    AddAlert,
-    Today
+    AddAlert
 } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -32,35 +31,32 @@ import { withFirebase } from "../../hoc/FirebaseContext";
 
 const REMINDERS = ["Email", "SMS"];
 class FeeForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: {
-                value: "",
-                helperText: ""
-            },
-            amount: {
-                value: 0,
-                helperText: ""
-            },
-            concurrency: {
-                value: 30,
-                helperText: ""
-            },
-            triggerDate: {
-                value: new Date(),
-                helperText: ""
-            },
-            reminderConcurrency: {
-                value: 0,
-                helperText: ""
-            },
-            reminders: {
-                value: [],
-                helperText: ""
-            }
-        };
-    }
+    state = {
+        name: {
+            value: "",
+            helperText: ""
+        },
+        amount: {
+            value: 0,
+            helperText: ""
+        },
+        concurrency: {
+            value: 30,
+            helperText: ""
+        },
+        triggerDate: {
+            value: new Date(),
+            helperText: ""
+        },
+        reminderConcurrency: {
+            value: 0,
+            helperText: ""
+        },
+        reminders: {
+            value: [],
+            helperText: ""
+        }
+    };
 
     onFeeCreation = event => {
         event.preventDefault();
@@ -69,6 +65,7 @@ class FeeForm extends Component {
                 name,
                 amount,
                 concurrency,
+                triggerDate,
                 reminderConcurrency,
                 reminders
             } = this.state;
@@ -76,6 +73,7 @@ class FeeForm extends Component {
                 name: name.value,
                 amount: parseFloat(amount.value),
                 concurrency: parseInt(concurrency.value),
+                triggerDate: triggerDate.value,
                 reminderConcurrency: parseInt(reminderConcurrency.value),
                 reminders: reminders.value
             };
@@ -117,7 +115,7 @@ class FeeForm extends Component {
     validateAmount = () => {
         const { amount } = this.state;
         const validateAmountState = {
-            value: parseFloat(amount.value),
+            ...amount,
             helperText: ""
         };
         if (!isFloatValid(amount.value)) {
@@ -134,7 +132,7 @@ class FeeForm extends Component {
     validateConcurrency = () => {
         const { concurrency } = this.state;
         const validateConcurrencyState = {
-            value: parseInt(concurrency.value),
+            ...concurrency,
             helperText: ""
         };
         if (!isIntValid(concurrency.value)) {
@@ -152,7 +150,7 @@ class FeeForm extends Component {
     validateReminderConcurrency = () => {
         const { reminderConcurrency } = this.state;
         const validateReminderConcurrencyState = {
-            value: parseInt(reminderConcurrency.value),
+            ...reminderConcurrency,
             helperText: ""
         };
         if (!isIntValid(reminderConcurrency.value)) {
