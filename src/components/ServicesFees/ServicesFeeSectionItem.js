@@ -6,19 +6,24 @@ import {
     CardContent,
     IconButton,
     Menu,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 import { MoreVert } from "@material-ui/icons";
 
-class FeeSectionItem extends Component {
+class ServicesFeeSectionItem extends Component {
     state = { anchorEl: null };
 
-    handleClick = event => {
+    handleClick = (event) => {
         this.setState({ anchorEl: event.currentTarget });
     };
 
     handleClose = () => {
         this.setState({ anchorEl: null });
+    };
+
+    handleDelete = () => {
+        this.setState({ anchorEl: null });
+        this.props.onDelete(this.props.item.id);
     };
 
     formatDate = () => {
@@ -29,13 +34,14 @@ class FeeSectionItem extends Component {
             ,
             { value: day },
             ,
-            { value: year }
-        ] = dtf.formatToParts(this.props.triggerDate);
+            { value: year },
+        ] = dtf.formatToParts(this.props.item.triggerDate.toDate());
         return `${day}/${month}/${year}`;
     };
 
     render() {
         const { anchorEl } = this.state;
+        const { item } = this.props;
         return (
             <Card key={this.props.id}>
                 <CardHeader
@@ -59,26 +65,26 @@ class FeeSectionItem extends Component {
                                 <MenuItem onClick={this.handleClose}>
                                     Edit
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
+                                <MenuItem onClick={this.handleDelete}>
                                     Delete
                                 </MenuItem>
                             </Menu>
                         </div>
                     }
-                    title={this.props.name}
+                    title={item.name}
                     subheader={`Next Charge: ${this.formatDate()}`}
                 />
                 <CardContent>
                     <Typography variant="h6">Charge:</Typography>
                     <Typography variant="body2" color="textSecondary">
-                        ${this.props.amount} will be charge every{" "}
-                        {this.props.concurrency} day(s).
+                        ${item.amount} will be charge the{" "}
+                        {this.formatDate().split("/")[0]} day of the months.
                     </Typography>
-                    <Typography variant="h6">Reminder:</Typography>
+                    <Typography variant="h6">Accounts:</Typography>
                     <Typography variant="body2" color="textSecondary">
-                        It will be send by{" "}
-                        {this.props.reminder.options.join(" and ")} every{" "}
-                        {this.props.reminder.concurrency} day(s).
+                        {this.props.accounts
+                            .map((account) => (account ? account.name : null))
+                            .join(", ")}
                     </Typography>
                 </CardContent>
             </Card>
@@ -86,4 +92,4 @@ class FeeSectionItem extends Component {
     }
 }
 
-export default FeeSectionItem;
+export default ServicesFeeSectionItem;

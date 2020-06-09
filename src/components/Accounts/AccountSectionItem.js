@@ -9,14 +9,14 @@ import {
     Button,
     IconButton,
     Menu,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 import { MoreVert } from "@material-ui/icons";
 
 class AccountSectionItem extends Component {
     state = { anchorEl: null };
 
-    handleClick = event => {
+    handleClick = (event) => {
         this.setState({ anchorEl: event.currentTarget });
     };
 
@@ -25,17 +25,26 @@ class AccountSectionItem extends Component {
     };
 
     handleDelete = () => {
+        const { item } = this.props;
         this.setState({ anchorEl: null });
-        this.props.onDelete(this.props.id);
-    }
+        this.props.onDelete(item.id);
+    };
+
+    handleEdit = () => {
+        const { item } = this.props;
+        this.setState({ anchorEl: null });
+        this.props.onEdit(item);
+    };
 
     handlePayment = () => {
+        const { item } = this.props;
         this.setState({ anchorEl: null });
-        this.props.onAddPayment(this.props.id);
-    }
+        this.props.onAddPayment(item.id);
+    };
 
     render() {
         const { anchorEl } = this.state;
+        const { item } = this.props;
         return (
             <Card>
                 <CardHeader
@@ -60,7 +69,7 @@ class AccountSectionItem extends Component {
                                 <MenuItem onClick={this.handlePayment}>
                                     Add Payment
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
+                                <MenuItem onClick={this.handleEdit}>
                                     Edit
                                 </MenuItem>
                                 <MenuItem onClick={this.handleDelete}>
@@ -69,11 +78,14 @@ class AccountSectionItem extends Component {
                             </Menu>
                         </div>
                     }
-                    title={this.props.name}
-                    subheader={`${this.props.email} - ${this.props.phone}`}
+                    title={item.name}
+                    subheader={`${item.email} - ${item.phone}`}
                 />
                 <CardContent>
-                    <Typography>Balance: {this.props.balance}</Typography>
+                    <Typography>Balance: {item.balance}</Typography>
+                    <Typography>
+                        Reminders: {item.reminders.join(", ")}
+                    </Typography>
                 </CardContent>
                 <CardActions>
                     <Button size="small">Show Payments</Button>

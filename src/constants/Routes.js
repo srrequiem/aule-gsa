@@ -5,7 +5,6 @@ export const Routes = {
     PASSWORD_FORGET: "/forget-password",
     DASHBOARD: "/dashboard",
     ACCOUNTS: "/accounts",
-    GROUP_SERVICES: "/group-services",
-    FEES: "/fees",
+    SERVICES_FEES: "/services-fees",
     SETTINGS: "/settings",
 };

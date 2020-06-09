@@ -13,7 +13,8 @@ class Accounts extends Component {
         accounts: [],
         accountID: "",
         paymentDialogOpen: false,
-        deleteDialogOpen: false
+        deleteDialogOpen: false,
+        itemToEdit: {}
     };
 
     componentDidMount() {
@@ -35,7 +36,11 @@ class Accounts extends Component {
     };
 
     onCreate = () => {
-        this.setState({ showForm: true });
+        this.setState({ showForm: true, itemToEdit: {} });
+    };
+
+    onEdit = itemToEdit => {
+        this.setState({ showForm: true, itemToEdit });
     };
 
     onDelete = accountID => {
@@ -66,21 +71,24 @@ class Accounts extends Component {
             accounts,
             accountID,
             paymentDialogOpen,
-            deleteDialogOpen
+            deleteDialogOpen,
+            itemToEdit
         } = this.state;
         return (
             <AppView title="Accounts">
                 <PageSection onCreate={this.onCreate}>
-                    {showForm && <AccountForm onCancel={this.onCancel} />}
+                    {showForm && (
+                        <AccountForm
+                            itemToEdit={itemToEdit}
+                            onCancel={this.onCancel}
+                        />
+                    )}
                     {accounts.map(account => (
                         <AccountSectionItem
                             key={account.id}
-                            id={account.id}
-                            name={account.name}
-                            email={account.email}
-                            phone={account.phone}
-                            balance={account.balance}
+                            item={account}
                             onDelete={this.onDelete}
+                            onEdit={this.onEdit}
                             onAddPayment={this.onOpenPaymentDialog}
                         />
                     ))}

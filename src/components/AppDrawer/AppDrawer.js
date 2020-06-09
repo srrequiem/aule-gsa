@@ -5,19 +5,18 @@ import {
     Divider,
     ListItem,
     ListItemIcon,
-    ListItemText
+    ListItemText,
 } from "@material-ui/core";
 import {
     ExitToApp,
     Settings,
     AccountBox,
-    Group,
-    LocalAtm
+    LocalAtm,
 } from "@material-ui/icons";
 import { withRouter } from "react-router-dom";
 import { Routes } from "../../constants/Routes";
 
-const AppDrawer = props => (
+const AppDrawer = (props) => (
     <Drawer open={props.open} onClose={props.onClose}>
         <div
             role="presentation"
@@ -29,20 +28,19 @@ const AppDrawer = props => (
                     {
                         text: "Accounts",
                         route: Routes.ACCOUNTS,
-                        icon: <AccountBox />
+                        icon: <AccountBox />,
                     },
                     {
-                        text: "Group Services",
-                        route: Routes.GROUP_SERVICES,
-                        icon: <Group />
+                        text: "Services Fees",
+                        route: Routes.SERVICES_FEES,
+                        icon: <LocalAtm />,
                     },
-                    { text: "Fees", route: Routes.FEES, icon: <LocalAtm /> },
                     {
                         text: "Settings",
                         route: Routes.SETTINGS,
-                        icon: <Settings />
-                    }
-                ].map(item => (
+                        icon: <Settings />,
+                    },
+                ].map((item) => (
                     <ListItem
                         button
                         key={item.text}
@@ -55,7 +53,7 @@ const AppDrawer = props => (
             </List>
             <Divider />
             <List>
-                {[{ text: "Log out", icon: <ExitToApp /> }].map(item => (
+                {[{ text: "Log out", icon: <ExitToApp /> }].map((item) => (
                     <ListItem button key={item.text}>
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />

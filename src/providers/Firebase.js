@@ -32,15 +32,12 @@ class Firebase {
     getAccounts = () => this.db.collection('accounts').get();
     getAccount = accountID => this.db.collection('accounts').doc(accountID).get();
     saveAccount = account => this.db.collection('accounts').add(account);
+    setAccount = (accountID, account) => this.db.collection('accounts').doc(accountID).set(account);
     deleteAccount = accountID => this.db.collection('accounts').doc(accountID).delete();
-    
-    getGroupServices = () => this.db.collection('groupServices').get();
-    saveGroupService = groupService => this.db.collection('groupServices').add(groupService);
-    deleteGroupService = groupServiceID => this.db.collection('groupServices').doc(groupServiceID).delete();
 
-    getFees = () => this.db.collection('fees').get();
-    saveFee = fee => this.db.collection('fees').add(fee);
-    deleteFee = feeID => this.db.collection('fees').doc(feeID).delete();
+    getServicesFees = () => this.db.collection('servicesFees').get();
+    saveServicesFee = serviceFee => this.db.collection('servicesFees').add(serviceFee);
+    deleteServicesFee = serviceFeeID => this.db.collection('servicesFees').doc(serviceFeeID).delete();
 
     savePayment = payment => this.db.collection('payments').add(payment);
 }

@@ -11,60 +11,125 @@ import {
     CardActions,
     Button,
     Select,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 import {
     Person,
     Phone,
     Email,
     AccountBalance,
-    LocalAtm
+    LocalAtm,
+    AddAlert,
 } from "@material-ui/icons";
 
-import { isEmailValid, isFloatValid } from "../../utils/Validation";
+import {
+    isEmailValid,
+    isFloatValid,
+    isObjectEmpty,
+} from "../../utils/Validation";
 import { withFirebase } from "../../hoc/FirebaseContext";
 
-const FEES = ["qwerty1", "qwerty2", "qwerty3", "qwerty4"];
-
+const REMINDERS = ["Email", "SMS"];
 class AccountForm extends Component {
     state = {
+        formTitleAction: "New",
+        submitFormButtonTitle: "Add account",
         name: {
             value: "",
-            helperText: ""
+            helperText: "",
         },
         phone: {
             value: "",
-            helperText: ""
+            helperText: "",
         },
         email: {
             value: "",
-            helperText: ""
+            helperText: "",
         },
         balance: {
             value: 0,
-            helperText: ""
+            helperText: "",
         },
-        fees: {
+        reminders: {
             value: [],
-            helperText: ""
-        }
+            helperText: "",
+        },
+        servicesFeesIDS: {
+            value: [],
+            helperText: "",
+        },
+        fetchedServicesFees: [],
     };
 
-    onAccountCreation = event => {
+    componentDidMount() {
+        const { itemToEdit } = this.props;
+        if (!isObjectEmpty(itemToEdit)) {
+            const {
+                name,
+                phone,
+                email,
+                balance,
+                reminders,
+                servicesFeesIDS,
+            } = this.state;
+            this.setState({
+                formTitleAction: "Edit",
+                submitFormButtonTitle: "Save changes",
+                name: { ...name, value: itemToEdit.name },
+                phone: { ...phone, value: itemToEdit.phone },
+                email: { ...email, value: itemToEdit.email },
+                balance: { ...balance, value: itemToEdit.balance },
+                reminders: { ...reminders, value: itemToEdit.reminders },
+                servicesFeesIDS: {
+                    ...servicesFeesIDS,
+                    value: itemToEdit.servicesFeesIDS,
+                },
+            });
+        }
+        this.props.firebase.getServicesFees().then((snapshots) => {
+            const fetchedServicesFees = [];
+            snapshots.forEach((doc) =>
+                fetchedServicesFees.push({ id: doc.id, ...doc.data() })
+            );
+            this.setState({ fetchedServicesFees });
+        });
+    }
+
+    isEditAction = () => {
+        const { formTitleAction } = this.state;
+        return formTitleAction === "Edit";
+    };
+
+    handleAccountAction = (event) => {
         event.preventDefault();
         if (this.isFormValid()) {
-            const { name, phone, email, balance, fees } = this.state;
+            const {
+                name,
+                phone,
+                email,
+                balance,
+                reminders,
+                servicesFeesIDS,
+            } = this.state;
             const account = {
                 name: name.value,
                 phone: phone.value,
                 email: email.value,
                 balance: parseFloat(balance.value),
-                fees: fees.value
+                reminders: reminders.value,
+                servicesFeesIDS: servicesFeesIDS.value,
             };
-            this.props.firebase
-                .saveAccount(account)
-                .then(res => console.log(res))
-                .catch(error => console.log(error));
+            if (this.isEditAction()) {
+                this.props.firebase
+                    .setAccount(this.props.itemToEdit.id, account)
+                    .then((res) => console.log(res))
+                    .catch((error) => console.log(error));
+            } else {
+                this.props.firebase
+                    .saveAccount(account)
+                    .then((res) => console.log(res))
+                    .catch((error) => console.log(error));
+            }
         }
     };
 
@@ -99,8 +164,9 @@ class AccountForm extends Component {
     validatePhone = () => {
         const { phone } = this.state;
         const validatePhoneState = { ...phone, helperText: "" };
-        if (phone.value.length < 3) {
-            validatePhoneState.helperText = "Name too short";
+        if (phone.value.length < 8) {
+            validatePhoneState.helperText =
+                "You must enter a valid phone number";
         }
         this.setState({ phone: validatePhoneState });
     };
@@ -135,11 +201,21 @@ class AccountForm extends Component {
     };
 
     render() {
-        const { name, phone, email, balance, fees } = this.state;
+        const {
+            formTitleAction,
+            submitFormButtonTitle,
+            name,
+            phone,
+            email,
+            balance,
+            reminders,
+            servicesFeesIDS,
+            fetchedServicesFees,
+        } = this.state;
         return (
-            <form onSubmit={this.onAccountCreation}>
+            <form onSubmit={this.handleAccountAction}>
                 <Card>
-                    <CardHeader title={"New account"} />
+                    <CardHeader title={`${formTitleAction} account`} />
                     <CardContent>
                         <FormControl
                             error={!this.isNameValid()}
@@ -153,9 +229,12 @@ class AccountForm extends Component {
                                 id="outlined-name"
                                 value={name.value}
                                 onBlur={this.validateName}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.setState({
-                                        name: { ...name, value: e.target.value }
+                                        name: {
+                                            ...name,
+                                            value: e.target.value,
+                                        },
                                     });
                                 }}
                                 startAdornment={
@@ -181,12 +260,12 @@ class AccountForm extends Component {
                                 id="outlined-phone"
                                 value={phone.value}
                                 onBlur={this.validatePhone}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.setState({
                                         phone: {
                                             ...phone,
-                                            value: e.target.value
-                                        }
+                                            value: e.target.value,
+                                        },
                                     });
                                 }}
                                 startAdornment={
@@ -212,12 +291,12 @@ class AccountForm extends Component {
                                 id="outlined-email"
                                 value={email.value}
                                 onBlur={this.validateEmail}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.setState({
                                         email: {
                                             ...email,
-                                            value: e.target.value
-                                        }
+                                            value: e.target.value,
+                                        },
                                     });
                                 }}
                                 startAdornment={
@@ -243,12 +322,12 @@ class AccountForm extends Component {
                                 id="outlined-adornment-balance"
                                 value={balance.value}
                                 onBlur={this.validateBalance}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.setState({
                                         balance: {
                                             ...balance,
-                                            value: e.target.value
-                                        }
+                                            value: e.target.value,
+                                        },
                                     });
                                 }}
                                 startAdornment={
@@ -264,19 +343,56 @@ class AccountForm extends Component {
                         </FormControl>
                         <FormControl variant="outlined">
                             <InputLabel
-                                htmlFor="outlined-adornment-fees"
-                                id="outlined-adornment-fees"
+                                htmlFor="outlined-adornment-reminders"
+                                id="outlined-adornment-reminders"
                             >
-                                Fees
+                                Reminders
                             </InputLabel>
                             <Select
-                                labelId="outlined-adornment-fees"
-                                id="outlined-adornment-fees-select"
+                                labelId="outlined-adornment-reminders"
+                                id="outlined-adornment-reminders-select"
                                 multiple
-                                value={fees.value}
-                                onChange={e => {
+                                value={reminders.value}
+                                onChange={(e) => {
                                     this.setState({
-                                        fees: { ...fees, value: e.target.value }
+                                        reminders: {
+                                            ...reminders,
+                                            value: e.target.value,
+                                        },
+                                    });
+                                }}
+                                labelWidth={60}
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <AddAlert />
+                                    </InputAdornment>
+                                }
+                            >
+                                {REMINDERS.map((reminder) => (
+                                    <MenuItem key={reminder} value={reminder}>
+                                        {reminder}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl variant="outlined">
+                            <InputLabel
+                                htmlFor="outlined-adornment-services-fees-ids"
+                                id="outlined-adornment-services-fees-ids"
+                            >
+                                Services Fees
+                            </InputLabel>
+                            <Select
+                                labelId="outlined-adornment-services-fees-ids"
+                                id="outlined-adornment-services-fees-ids-select"
+                                multiple
+                                value={servicesFeesIDS.value}
+                                onChange={(e) => {
+                                    this.setState({
+                                        servicesFeesIDS: {
+                                            ...servicesFeesIDS,
+                                            value: e.target.value,
+                                        },
                                     });
                                 }}
                                 labelWidth={60}
@@ -286,9 +402,12 @@ class AccountForm extends Component {
                                     </InputAdornment>
                                 }
                             >
-                                {FEES.map(fee => (
-                                    <MenuItem key={fee} value={fee}>
-                                        {fee}
+                                {fetchedServicesFees.map((servicesFee) => (
+                                    <MenuItem
+                                        key={servicesFee.id}
+                                        value={servicesFee.id}
+                                    >
+                                        {servicesFee.name}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -297,7 +416,7 @@ class AccountForm extends Component {
                     <CardActions style={{ justifyContent: "flex-end" }}>
                         <Button onClick={this.props.onCancel}>Cancel</Button>
                         <Button color="primary" type="submit">
-                            Add account
+                            {submitFormButtonTitle}
                         </Button>
                     </CardActions>
                 </Card>
