@@ -13,7 +13,7 @@ class ServicesFees extends Component {
         servicesFeesAccounts: {},
         servicesFeeID: "",
         deleteDialogOpen: false,
-        itemToEdit: {}
+        itemToEdit: {},
     };
 
     componentDidMount() {
@@ -53,7 +53,7 @@ class ServicesFees extends Component {
         this.setState({ showForm: true, itemToEdit: {} });
     };
 
-    onEdit = itemToEdit => {
+    onEdit = (itemToEdit) => {
         this.setState({ showForm: true, itemToEdit });
     };
 
@@ -94,17 +94,23 @@ class ServicesFees extends Component {
                     item={servicesFee}
                     accounts={accounts}
                     onDelete={this.onDelete}
+                    onEdit={this.onEdit}
                 />
             );
         });
     };
 
     render() {
-        const { showForm, deleteDialogOpen } = this.state;
+        const { showForm, deleteDialogOpen, itemToEdit } = this.state;
         return (
             <AppView title="Services Fees">
                 <PageSection onCreate={this.onCreate}>
-                    {showForm && <ServicesFeeForm onCancel={this.onCancel} />}
+                    {showForm && (
+                        <ServicesFeeForm
+                            itemToEdit={itemToEdit}
+                            onCancel={this.onCancel}
+                        />
+                    )}
                     {this.renderSectionItems()}
                 </PageSection>
                 <DeleteDialog

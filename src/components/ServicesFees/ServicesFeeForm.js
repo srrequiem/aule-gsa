@@ -20,11 +20,13 @@ import {
     KeyboardDatePicker,
 } from "@material-ui/pickers";
 
-import { isFloatValid } from "../../utils/Validation";
+import { isFloatValid, isObjectEmpty } from "../../utils/Validation";
 import { withFirebase } from "../../hoc/FirebaseContext";
 
 class ServicesFeeForm extends Component {
     state = {
+        formTitleAction: "New",
+        submitFormButtonTitle: "Add service fee",
         name: {
             value: "",
             helperText: "",
@@ -45,6 +47,24 @@ class ServicesFeeForm extends Component {
     };
 
     componentDidMount() {
+        const { itemToEdit } = this.props;
+        if (!isObjectEmpty(itemToEdit)) {
+            const { name, amount, triggerDate, accounts } = this.state;
+            this.setState({
+                formTitleAction: "Edit",
+                submitFormButtonTitle: "Save changes",
+                name: { ...name, value: itemToEdit.name },
+                amount: { ...amount, value: itemToEdit.amount },
+                triggerDate: {
+                    ...triggerDate,
+                    value: itemToEdit.triggerDate.toDate(),
+                },
+                accounts: {
+                    ...accounts,
+                    value: itemToEdit.accountsIDS,
+                },
+            });
+        }
         this.props.firebase.getAccounts().then((snapshots) => {
             const fetchedAccounts = [];
             snapshots.forEach((doc) =>
@@ -108,6 +128,8 @@ class ServicesFeeForm extends Component {
 
     render() {
         const {
+            formTitleAction,
+            submitFormButtonTitle,
             name,
             amount,
             triggerDate,
@@ -118,7 +140,7 @@ class ServicesFeeForm extends Component {
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <form onSubmit={this.onFeeCreation}>
                     <Card>
-                        <CardHeader title={"New service fee"} />
+                        <CardHeader title={`${formTitleAction} service fee`} />
                         <CardContent>
                             <FormControl
                                 error={!this.isNameValid()}
@@ -244,7 +266,7 @@ class ServicesFeeForm extends Component {
                                 Cancel
                             </Button>
                             <Button color="primary" type="submit">
-                                Add fee
+                                {submitFormButtonTitle}
                             </Button>
                         </CardActions>
                     </Card>

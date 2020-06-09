@@ -26,6 +26,12 @@ class ServicesFeeSectionItem extends Component {
         this.props.onDelete(this.props.item.id);
     };
 
+    handleEdit = () => {
+        const { item } = this.props;
+        this.setState({ anchorEl: null });
+        this.props.onEdit(item);
+    };
+
     formatDate = () => {
         const options = { day: "numeric", month: "short", year: "numeric" };
         const dtf = new Intl.DateTimeFormat("en-US", options);
@@ -62,7 +68,7 @@ class ServicesFeeSectionItem extends Component {
                                 open={Boolean(anchorEl)}
                                 onClose={this.handleClose}
                             >
-                                <MenuItem onClick={this.handleClose}>
+                                <MenuItem onClick={this.handleEdit}>
                                     Edit
                                 </MenuItem>
                                 <MenuItem onClick={this.handleDelete}>
