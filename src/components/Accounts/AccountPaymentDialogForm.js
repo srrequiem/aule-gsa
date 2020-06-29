@@ -3,7 +3,6 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
     FormControl,
     InputLabel,
@@ -88,11 +87,6 @@ class AccountPaymentForm extends Component {
                             Account Payment
                         </DialogTitle>
                         <DialogContent>
-                            <DialogContentText>
-                                To subscribe to this website, please enter your
-                                email address here. We will send updates
-                                occasionally.
-                            </DialogContentText>
                             <FormControl
                                 error={!this.isAmountValid()}
                                 required

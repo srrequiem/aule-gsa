@@ -1,14 +1,17 @@
 import React, { Component } from "react";
+import { Fab } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+
 import { withAuthorization } from "../../hoc/Auth";
 import AppView from "../../containers/AppView/AppView";
-import PageSection from "../../components/PageSection/PageSection";
-import ServicesFeeForm from "../../components/ServicesFees/ServicesFeeForm";
+import ServicesFeeForm from "../../components/ServicesFees/ServicesFeeDialogForm";
 import ServicesFeeSectionItem from "../../components/ServicesFees/ServicesFeeSectionItem";
 import DeleteDialog from "../../components/DeleteDialog/DeleteDialog";
+import ServicesFeeSection from "../../containers/ServicesFeeSection/ServicesFeeSection";
 
 class ServicesFees extends Component {
     state = {
-        showForm: false,
+        formDialogOpen: false,
         servicesFees: [],
         servicesFeesAccounts: {},
         servicesFeeID: "",
@@ -50,11 +53,11 @@ class ServicesFees extends Component {
     }
 
     onCreate = () => {
-        this.setState({ showForm: true, itemToEdit: {} });
+        this.setState({ formDialogOpen: true, itemToEdit: {} });
     };
 
     onEdit = (itemToEdit) => {
-        this.setState({ showForm: true, itemToEdit });
+        this.setState({ formDialogOpen: true, itemToEdit });
     };
 
     onDelete = (servicesFeeID) => {
@@ -75,8 +78,8 @@ class ServicesFees extends Component {
         }
     };
 
-    onCancel = () => {
-        this.setState({ showForm: false });
+    onClose = () => {
+        this.setState({ formDialogOpen: false });
     };
 
     renderSectionItems = () => {
@@ -101,23 +104,32 @@ class ServicesFees extends Component {
     };
 
     render() {
-        const { showForm, deleteDialogOpen, itemToEdit } = this.state;
+        const { formDialogOpen, deleteDialogOpen, itemToEdit } = this.state;
         return (
             <AppView title="Services Fees">
-                <PageSection onCreate={this.onCreate}>
-                    {showForm && (
-                        <ServicesFeeForm
-                            itemToEdit={itemToEdit}
-                            onCancel={this.onCancel}
-                        />
-                    )}
-                    {this.renderSectionItems()}
-                </PageSection>
+                <ServicesFeeSection>{this.renderSectionItems()}</ServicesFeeSection>
+                <ServicesFeeForm
+                    open={formDialogOpen}
+                    itemToEdit={itemToEdit}
+                    onClose={this.onClose}
+                />
                 <DeleteDialog
                     entity="services fee"
                     open={deleteDialogOpen}
                     handleConfirmation={this.handleDeleteConfirmation}
                 />
+                <Fab
+                    aria-label="Add"
+                    color="primary"
+                    onClick={this.onCreate}
+                    style={{
+                        position: "fixed",
+                        bottom: "2rem",
+                        right: "2rem",
+                    }}
+                >
+                    <Add />
+                </Fab>
             </AppView>
         );
     }

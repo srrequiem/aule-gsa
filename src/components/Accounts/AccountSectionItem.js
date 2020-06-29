@@ -46,52 +46,54 @@ class AccountSectionItem extends Component {
         const { anchorEl } = this.state;
         const { item } = this.props;
         return (
-            <Card>
-                <CardHeader
-                    avatar={<Avatar aria-label="account">G</Avatar>}
-                    action={
-                        <div>
-                            <IconButton
-                                aria-label="account-item-options"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                onClick={this.handleClick}
-                            >
-                                <MoreVert />
-                            </IconButton>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={this.handleClose}
-                            >
-                                <MenuItem onClick={this.handlePayment}>
-                                    Add Payment
-                                </MenuItem>
-                                <MenuItem onClick={this.handleEdit}>
-                                    Edit
-                                </MenuItem>
-                                <MenuItem onClick={this.handleDelete}>
-                                    Delete
-                                </MenuItem>
-                            </Menu>
-                        </div>
-                    }
-                    title={item.name}
-                    subheader={`${item.email} - ${item.phone}`}
-                />
-                <CardContent>
-                    <Typography>Balance: {item.balance}</Typography>
-                    <Typography>
-                        Reminders: {item.reminders.join(", ")}
-                    </Typography>
-                </CardContent>
-                <CardActions>
-                    <Button size="small">Show Payments</Button>
-                    <Button size="small">Show Fees</Button>
-                </CardActions>
-            </Card>
+            <div className="AccountSectionItem">
+                <Card>
+                    <CardHeader
+                        avatar={<Avatar aria-label="account">G</Avatar>}
+                        action={
+                            <div>
+                                <IconButton
+                                    aria-label="account-item-options"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    onClick={this.handleClick}
+                                >
+                                    <MoreVert />
+                                </IconButton>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={this.handleClose}
+                                >
+                                    <MenuItem onClick={this.handlePayment}>
+                                        Add Payment
+                                    </MenuItem>
+                                    <MenuItem onClick={this.handleEdit}>
+                                        Edit
+                                    </MenuItem>
+                                    <MenuItem onClick={this.handleDelete}>
+                                        Delete
+                                    </MenuItem>
+                                </Menu>
+                            </div>
+                        }
+                        title={item.name}
+                        subheader={`${item.email} - ${item.phone}`}
+                    />
+                    <CardContent>
+                        <Typography>Balance: {item.balance}</Typography>
+                        <Typography>
+                            Reminders: {item.reminders.join(", ")}
+                        </Typography>
+                    </CardContent>
+                    <CardActions>
+                        <Button size="small">Show Payments</Button>
+                        <Button size="small">Show Fees</Button>
+                    </CardActions>
+                </Card>
+            </div>
         );
     }
 }

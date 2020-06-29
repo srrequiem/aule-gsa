@@ -1,33 +1,36 @@
 import React, { Component } from "react";
+import { Fab } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+
 import { withAuthorization } from "../../hoc/Auth";
 import AppView from "../../containers/AppView/AppView";
-import PageSection from "../../components/PageSection/PageSection";
 import AccountSectionItem from "../../components/Accounts/AccountSectionItem";
-import AccountForm from "../../components/Accounts/AccountForm";
+import AccountDialogForm from "../../components/Accounts/AccountDialogForm";
 import AccountPaymentDialogForm from "../../components/Accounts/AccountPaymentDialogForm";
 import DeleteDialog from "../../components/DeleteDialog/DeleteDialog";
+import AccountSection from "../../containers/AccountSection/AccountSection";
 
 class Accounts extends Component {
     state = {
-        showForm: false,
+        formDialogOpen: false,
         accounts: [],
         accountID: "",
         paymentDialogOpen: false,
         deleteDialogOpen: false,
-        itemToEdit: {}
+        itemToEdit: {},
     };
 
     componentDidMount() {
-        this.props.firebase.getAccounts().then(snapshots => {
+        this.props.firebase.getAccounts().then((snapshots) => {
             const accounts = [];
-            snapshots.forEach(doc =>
+            snapshots.forEach((doc) =>
                 accounts.push({ id: doc.id, ...doc.data() })
             );
             this.setState({ accounts });
         });
     }
 
-    onOpenPaymentDialog = accountID => {
+    onOpenPaymentDialog = (accountID) => {
         this.setState({ accountID, paymentDialogOpen: true });
     };
 
@@ -36,18 +39,18 @@ class Accounts extends Component {
     };
 
     onCreate = () => {
-        this.setState({ showForm: true, itemToEdit: {} });
+        this.setState({ formDialogOpen: true, itemToEdit: {} });
     };
 
-    onEdit = itemToEdit => {
-        this.setState({ showForm: true, itemToEdit });
+    onEdit = (itemToEdit) => {
+        this.setState({ formDialogOpen: true, itemToEdit });
     };
 
-    onDelete = accountID => {
+    onDelete = (accountID) => {
         this.setState({ accountID, deleteDialogOpen: true });
     };
 
-    handleDeleteConfirmation = decision => {
+    handleDeleteConfirmation = (decision) => {
         if (decision) {
             const { accountID } = this.state;
             this.props.firebase
@@ -55,35 +58,30 @@ class Accounts extends Component {
                 .then(() => {
                     this.setState({ deleteDialogOpen: false });
                 })
-                .catch(error => console.log(error));
+                .catch((error) => console.log(error));
         } else {
             this.setState({ deleteDialogOpen: false });
         }
     };
 
-    onCancel = () => {
-        this.setState({ showForm: false });
+    onClose = (error) => {
+        if (error) console.log(error);
+        this.setState({ formDialogOpen: false });
     };
 
     render() {
         const {
-            showForm,
+            formDialogOpen,
             accounts,
             accountID,
             paymentDialogOpen,
             deleteDialogOpen,
-            itemToEdit
+            itemToEdit,
         } = this.state;
         return (
             <AppView title="Accounts">
-                <PageSection onCreate={this.onCreate}>
-                    {showForm && (
-                        <AccountForm
-                            itemToEdit={itemToEdit}
-                            onCancel={this.onCancel}
-                        />
-                    )}
-                    {accounts.map(account => (
+                <AccountSection>
+                    {accounts.map((account) => (
                         <AccountSectionItem
                             key={account.id}
                             item={account}
@@ -92,7 +90,12 @@ class Accounts extends Component {
                             onAddPayment={this.onOpenPaymentDialog}
                         />
                     ))}
-                </PageSection>
+                </AccountSection>
+                <AccountDialogForm
+                    open={formDialogOpen}
+                    itemToEdit={itemToEdit}
+                    onClose={this.onClose}
+                />
                 <AccountPaymentDialogForm
                     open={paymentDialogOpen}
                     onClose={this.onClosePaymentDialog}
@@ -103,11 +106,23 @@ class Accounts extends Component {
                     open={deleteDialogOpen}
                     handleConfirmation={this.handleDeleteConfirmation}
                 />
+                <Fab
+                    aria-label="Add"
+                    color="primary"
+                    onClick={this.onCreate}
+                    style={{
+                        position: "fixed",
+                        bottom: "2rem",
+                        right: "2rem",
+                    }}
+                >
+                    <Add />
+                </Fab>
             </AppView>
         );
     }
 }
 
-const condition = authUser => !!authUser;
+const condition = (authUser) => !!authUser;
 
 export default withAuthorization(condition)(Accounts);

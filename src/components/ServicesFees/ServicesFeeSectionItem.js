@@ -49,51 +49,55 @@ class ServicesFeeSectionItem extends Component {
         const { anchorEl } = this.state;
         const { item } = this.props;
         return (
-            <Card key={this.props.id}>
-                <CardHeader
-                    action={
-                        <div>
-                            <IconButton
-                                aria-label="account-item-options"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                onClick={this.handleClick}
-                            >
-                                <MoreVert />
-                            </IconButton>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={this.handleClose}
-                            >
-                                <MenuItem onClick={this.handleEdit}>
-                                    Edit
-                                </MenuItem>
-                                <MenuItem onClick={this.handleDelete}>
-                                    Delete
-                                </MenuItem>
-                            </Menu>
-                        </div>
-                    }
-                    title={item.name}
-                    subheader={`Next Charge: ${this.formatDate()}`}
-                />
-                <CardContent>
-                    <Typography variant="h6">Charge:</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                        ${item.amount} will be charge the{" "}
-                        {this.formatDate().split("/")[0]} day of the months.
-                    </Typography>
-                    <Typography variant="h6">Accounts:</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                        {this.props.accounts
-                            .map((account) => (account ? account.name : null))
-                            .join(", ")}
-                    </Typography>
-                </CardContent>
-            </Card>
+            <div className="ServicesFeeSectionItem">
+                <Card key={this.props.id}>
+                    <CardHeader
+                        action={
+                            <div>
+                                <IconButton
+                                    aria-label="account-item-options"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    onClick={this.handleClick}
+                                >
+                                    <MoreVert />
+                                </IconButton>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={this.handleClose}
+                                >
+                                    <MenuItem onClick={this.handleEdit}>
+                                        Edit
+                                    </MenuItem>
+                                    <MenuItem onClick={this.handleDelete}>
+                                        Delete
+                                    </MenuItem>
+                                </Menu>
+                            </div>
+                        }
+                        title={item.name}
+                        subheader={`Next Charge: ${this.formatDate()}`}
+                    />
+                    <CardContent>
+                        <Typography variant="h6">Charge:</Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            ${item.amount} will be charge the{" "}
+                            {this.formatDate().split("/")[0]} day of the months.
+                        </Typography>
+                        <Typography variant="h6">Accounts:</Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            {this.props.accounts
+                                .map((account) =>
+                                    account ? account.name : null
+                                )
+                                .join(", ")}
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </div>
         );
     }
 }

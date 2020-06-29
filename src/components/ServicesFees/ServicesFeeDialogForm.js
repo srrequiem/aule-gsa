@@ -5,10 +5,10 @@ import {
     OutlinedInput,
     InputAdornment,
     FormHelperText,
-    Card,
-    CardHeader,
-    CardContent,
-    CardActions,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Button,
     Select,
     MenuItem,
@@ -23,7 +23,7 @@ import {
 import { isFloatValid, isObjectEmpty } from "../../utils/Validation";
 import { withFirebase } from "../../hoc/FirebaseContext";
 
-class ServicesFeeForm extends Component {
+class ServicesFeeDialogForm extends Component {
     state = {
         formTitleAction: "New",
         submitFormButtonTitle: "Add service fee",
@@ -47,24 +47,6 @@ class ServicesFeeForm extends Component {
     };
 
     componentDidMount() {
-        const { itemToEdit } = this.props;
-        if (!isObjectEmpty(itemToEdit)) {
-            const { name, amount, triggerDate, accounts } = this.state;
-            this.setState({
-                formTitleAction: "Edit",
-                submitFormButtonTitle: "Save changes",
-                name: { ...name, value: itemToEdit.name },
-                amount: { ...amount, value: itemToEdit.amount },
-                triggerDate: {
-                    ...triggerDate,
-                    value: itemToEdit.triggerDate.toDate(),
-                },
-                accounts: {
-                    ...accounts,
-                    value: itemToEdit.accountsIDS,
-                },
-            });
-        }
         this.props.firebase.getAccounts().then((snapshots) => {
             const fetchedAccounts = [];
             snapshots.forEach((doc) =>
@@ -72,6 +54,50 @@ class ServicesFeeForm extends Component {
             );
             this.setState({ fetchedAccounts });
         });
+    }
+
+    componentDidUpdate(prevProps) {
+        const { itemToEdit } = this.props;
+        if (prevProps.itemToEdit !== itemToEdit) {
+            if (isObjectEmpty(itemToEdit)) {
+                this.setState({
+                    formTitleAction: "New",
+                    submitFormButtonTitle: "Add service fee",
+                    name: {
+                        value: "",
+                        helperText: "",
+                    },
+                    amount: {
+                        value: 0,
+                        helperText: "",
+                    },
+                    triggerDate: {
+                        value: new Date(),
+                        helperText: "",
+                    },
+                    accounts: {
+                        value: [],
+                        helperText: "",
+                    },
+                });
+            } else {
+                const { name, amount, triggerDate, accounts } = this.state;
+                this.setState({
+                    formTitleAction: "Edit",
+                    submitFormButtonTitle: "Save changes",
+                    name: { ...name, value: itemToEdit.name },
+                    amount: { ...amount, value: itemToEdit.amount },
+                    triggerDate: {
+                        ...triggerDate,
+                        value: itemToEdit.triggerDate.toDate(),
+                    },
+                    accounts: {
+                        ...accounts,
+                        value: itemToEdit.accountsIDS,
+                    },
+                });
+            }
+        }
     }
 
     onFeeCreation = (event) => {
@@ -86,8 +112,8 @@ class ServicesFeeForm extends Component {
             };
             this.props.firebase
                 .saveServicesFee(fee)
-                .then((res) => console.log(res))
-                .catch((error) => console.log(error));
+                .then((res) => this.props.onClose())
+                .catch((error) => this.props.onClose(error));
         }
     };
 
@@ -138,10 +164,16 @@ class ServicesFeeForm extends Component {
         } = this.state;
         return (
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <form onSubmit={this.onFeeCreation}>
-                    <Card>
-                        <CardHeader title={`${formTitleAction} service fee`} />
-                        <CardContent>
+                <Dialog
+                    open={this.props.open}
+                    onClose={() => this.props.onClose()}
+                    aria-labelledby="form-dialog-form-title"
+                >
+                    <DialogTitle id="form-dialog-form-title">
+                        {`${formTitleAction} service fee`}
+                    </DialogTitle>
+                    <form onSubmit={this.onFeeCreation}>
+                        <DialogContent>
                             <FormControl
                                 error={!this.isNameValid()}
                                 required
@@ -260,20 +292,20 @@ class ServicesFeeForm extends Component {
                                     ))}
                                 </Select>
                             </FormControl>
-                        </CardContent>
-                        <CardActions style={{ justifyContent: "flex-end" }}>
-                            <Button onClick={this.props.onCancel}>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => this.props.onClose()}>
                                 Cancel
                             </Button>
                             <Button color="primary" type="submit">
                                 {submitFormButtonTitle}
                             </Button>
-                        </CardActions>
-                    </Card>
-                </form>
+                        </DialogActions>
+                    </form>
+                </Dialog>
             </MuiPickersUtilsProvider>
         );
     }
 }
 
-export default withFirebase(ServicesFeeForm);
+export default withFirebase(ServicesFeeDialogForm);

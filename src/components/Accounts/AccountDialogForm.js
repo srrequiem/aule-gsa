@@ -5,10 +5,10 @@ import {
     OutlinedInput,
     InputAdornment,
     FormHelperText,
-    Card,
-    CardHeader,
-    CardContent,
-    CardActions,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Button,
     Select,
     MenuItem,
@@ -30,7 +30,7 @@ import {
 import { withFirebase } from "../../hoc/FirebaseContext";
 
 const REMINDERS = ["Email", "SMS"];
-class AccountForm extends Component {
+class AccountDialogForm extends Component {
     state = {
         formTitleAction: "New",
         submitFormButtonTitle: "Add account",
@@ -62,30 +62,6 @@ class AccountForm extends Component {
     };
 
     componentDidMount() {
-        const { itemToEdit } = this.props;
-        if (!isObjectEmpty(itemToEdit)) {
-            const {
-                name,
-                phone,
-                email,
-                balance,
-                reminders,
-                servicesFeesIDS,
-            } = this.state;
-            this.setState({
-                formTitleAction: "Edit",
-                submitFormButtonTitle: "Save changes",
-                name: { ...name, value: itemToEdit.name },
-                phone: { ...phone, value: itemToEdit.phone },
-                email: { ...email, value: itemToEdit.email },
-                balance: { ...balance, value: itemToEdit.balance },
-                reminders: { ...reminders, value: itemToEdit.reminders },
-                servicesFeesIDS: {
-                    ...servicesFeesIDS,
-                    value: itemToEdit.servicesFeesIDS,
-                },
-            });
-        }
         this.props.firebase.getServicesFees().then((snapshots) => {
             const fetchedServicesFees = [];
             snapshots.forEach((doc) =>
@@ -93,6 +69,64 @@ class AccountForm extends Component {
             );
             this.setState({ fetchedServicesFees });
         });
+    }
+
+    componentDidUpdate(prevProps) {
+        const { itemToEdit } = this.props;
+        if (prevProps.itemToEdit !== itemToEdit) {
+            if (isObjectEmpty(itemToEdit)) {
+                this.setState({
+                    formTitleAction: "New",
+                    submitFormButtonTitle: "Add account",
+                    name: {
+                        value: "",
+                        helperText: "",
+                    },
+                    phone: {
+                        value: "",
+                        helperText: "",
+                    },
+                    email: {
+                        value: "",
+                        helperText: "",
+                    },
+                    balance: {
+                        value: 0,
+                        helperText: "",
+                    },
+                    reminders: {
+                        value: [],
+                        helperText: "",
+                    },
+                    servicesFeesIDS: {
+                        value: [],
+                        helperText: "",
+                    },
+                });
+            } else {
+                const {
+                    name,
+                    phone,
+                    email,
+                    balance,
+                    reminders,
+                    servicesFeesIDS,
+                } = this.state;
+                this.setState({
+                    formTitleAction: "Edit",
+                    submitFormButtonTitle: "Save changes",
+                    name: { ...name, value: itemToEdit.name },
+                    phone: { ...phone, value: itemToEdit.phone },
+                    email: { ...email, value: itemToEdit.email },
+                    balance: { ...balance, value: itemToEdit.balance },
+                    reminders: { ...reminders, value: itemToEdit.reminders },
+                    servicesFeesIDS: {
+                        ...servicesFeesIDS,
+                        value: itemToEdit.servicesFeesIDS,
+                    },
+                });
+            }
+        }
     }
 
     isEditAction = () => {
@@ -122,13 +156,13 @@ class AccountForm extends Component {
             if (this.isEditAction()) {
                 this.props.firebase
                     .setAccount(this.props.itemToEdit.id, account)
-                    .then((res) => console.log(res))
-                    .catch((error) => console.log(error));
+                    .then((res) => this.props.onClose())
+                    .catch((error) => this.props.onClose(error));
             } else {
                 this.props.firebase
                     .saveAccount(account)
-                    .then((res) => console.log(res))
-                    .catch((error) => console.log(error));
+                    .then((res) => this.props.onClose())
+                    .catch((error) => this.props.onClose(error));
             }
         }
     };
@@ -213,10 +247,16 @@ class AccountForm extends Component {
             fetchedServicesFees,
         } = this.state;
         return (
-            <form onSubmit={this.handleAccountAction}>
-                <Card>
-                    <CardHeader title={`${formTitleAction} account`} />
-                    <CardContent>
+            <Dialog
+                open={this.props.open}
+                onClose={() => this.props.onClose()}
+                aria-labelledby="form-dialog-form-title"
+            >
+                <DialogTitle id="form-dialog-form-title">
+                    {`${formTitleAction} account`}
+                </DialogTitle>
+                <form onSubmit={this.handleAccountAction}>
+                    <DialogContent>
                         <FormControl
                             error={!this.isNameValid()}
                             required
@@ -412,17 +452,22 @@ class AccountForm extends Component {
                                 ))}
                             </Select>
                         </FormControl>
-                    </CardContent>
-                    <CardActions style={{ justifyContent: "flex-end" }}>
-                        <Button onClick={this.props.onCancel}>Cancel</Button>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={() => this.props.onClose()}
+                            color="primary"
+                        >
+                            Cancel
+                        </Button>
                         <Button color="primary" type="submit">
                             {submitFormButtonTitle}
                         </Button>
-                    </CardActions>
-                </Card>
-            </form>
+                    </DialogActions>
+                </form>
+            </Dialog>
         );
     }
 }
 
-export default withFirebase(AccountForm);
+export default withFirebase(AccountDialogForm);
