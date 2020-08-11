@@ -118,8 +118,8 @@ const workers: Workers = {
             };
             if (account.reminders.includes("Email")) {
                 const emailSender = sendEmail(reminder)
-                    .then(() => console.log("Email sended"))
-                    .catch((err: any) => console.log(err));
+                    .then(() => functions.logger.log("Email sended"))
+                    .catch((err: any) => functions.logger.log(err));
                 senders.push(emailSender);
             }
         });

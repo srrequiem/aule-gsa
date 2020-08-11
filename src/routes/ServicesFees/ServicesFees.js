@@ -4,7 +4,7 @@ import { Add } from "@material-ui/icons";
 
 import { withAuthorization } from "../../hoc/Auth";
 import AppView from "../../containers/AppView/AppView";
-import ServicesFeeForm from "../../components/ServicesFees/ServicesFeeDialogForm";
+import ServicesFeeDialogForm from "../../components/ServicesFees/ServicesFeeDialogForm";
 import ServicesFeeSectionItem from "../../components/ServicesFees/ServicesFeeSectionItem";
 import DeleteDialog from "../../components/DeleteDialog/DeleteDialog";
 import ServicesFeeSection from "../../containers/ServicesFeeSection/ServicesFeeSection";
@@ -108,7 +108,7 @@ class ServicesFees extends Component {
         return (
             <AppView title="Services Fees">
                 <ServicesFeeSection>{this.renderSectionItems()}</ServicesFeeSection>
-                <ServicesFeeForm
+                <ServicesFeeDialogForm
                     open={formDialogOpen}
                     itemToEdit={itemToEdit}
                     onClose={this.onClose}

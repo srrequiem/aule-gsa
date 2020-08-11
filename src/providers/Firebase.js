@@ -37,6 +37,7 @@ class Firebase {
 
     getServicesFees = () => this.db.collection('servicesFees').get();
     saveServicesFee = serviceFee => this.db.collection('servicesFees').add(serviceFee);
+    setServicesFee = (serviceFeeID, serviceFee) => this.db.collection('servicesFees').doc(serviceFeeID).set(serviceFee);
     deleteServicesFee = serviceFeeID => this.db.collection('servicesFees').doc(serviceFeeID).delete();
 
     savePayment = payment => this.db.collection('payments').add(payment);

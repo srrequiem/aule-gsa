@@ -110,11 +110,23 @@ class ServicesFeeDialogForm extends Component {
                 triggerDate: triggerDate.value,
                 accountsIDS: accounts.value,
             };
-            this.props.firebase
-                .saveServicesFee(fee)
-                .then((res) => this.props.onClose())
-                .catch((error) => this.props.onClose(error));
+            if (this.isEditAction()) {
+                this.props.firebase
+                    .setServicesFee(this.props.itemToEdit.id, fee)
+                    .then((res) => this.props.onClose())
+                    .catch((error) => this.props.onClose(error));
+            } else {
+                this.props.firebase
+                    .saveServicesFee(fee)
+                    .then((res) => this.props.onClose())
+                    .catch((error) => this.props.onClose(error));
+            }
         }
+    };
+
+    isEditAction = () => {
+        const { formTitleAction } = this.state;
+        return formTitleAction === "Edit";
     };
 
     isFormValid = () => {
